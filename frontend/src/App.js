@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import './App.css';
 import { db } from './config/firebase-config';
 import { getDocs, collection } from 'firebase/firestore';
+import { Auth } from "./components/auth";
 
 function App() {
   const [testList, setTestList] = useState([]);
@@ -33,12 +34,14 @@ function App() {
     getTestList();
   }, [])
 
-  // wtf is a useState...
   const [showTests, setShowTests] = useState(false);
 
   return (
     <div>
       <h1>GIGABITES</h1>
+
+      <div><Auth/></div>
+       
       <button onClick={() => setShowTests(!showTests)}>{showTests ? "Hide Test Datas" : "Show Test Datas"}</button>
 
       {showTests && (
