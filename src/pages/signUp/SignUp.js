@@ -1,13 +1,14 @@
 import { auth, googleProvider } from '../../config/firebase-config';
 import { createUserWithEmailAndPassword, signInWithPopup, signOut, signInWithEmailAndPassword } from 'firebase/auth'
 import { useState } from "react"
-import './Login.css'
+import { useNavigate } from "react-router-dom";
+import './SignUp.css'
 
 import email_icon from "../../assets/email.png"
 import password_icon from "../../assets/password.png"
 import google_icon from '../../assets/Google__G__logo.svg'
 
-export const Auth = () => {
+export const SignUp = () => {
     // useState: probably a react function that stores the value to email and use the setEmail function to change the email value...
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -41,13 +42,7 @@ export const Auth = () => {
         }
     };
 
-    const loginEmailPassword = async () => {
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    const navigate = useNavigate();
 
     return (
         <div className='container'>
@@ -73,9 +68,14 @@ export const Auth = () => {
                     />
                 </div>
             </div>
+            <div className="text">
+                <p>Already have an account?</p>
+                <span onClick={() => navigate("/login")}>Login</span>
+            </div>
+            
             <div className="submit-container">
-                <div className="submit" onClick={signIn}> Sign In </div>
-                <div className="submit" onClick={loginEmailPassword}> Login </div>
+                <div className="submit" onClick={signIn}> Sign Up </div>
+                {/* <div className="submit" onClick={loginEmailPassword}> Login </div> */}
             </div>
 
             <div className="divider">
