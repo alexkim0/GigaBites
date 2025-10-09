@@ -7,6 +7,7 @@
   import { getDocs, collection } from 'firebase/firestore';
   import { SignUp } from "./pages/signUp/SignUp";
   import { Login } from "./pages/login/LogIn"
+  import { Homepage } from "./pages/homepage/Homepage"
 
   function App() {
     const [testList, setTestList] = useState([]);
@@ -44,6 +45,7 @@
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp/>}/>
+          <Route path="/homepage" element={<Homepage/>}/>
         </Routes>
       </Router>
     );

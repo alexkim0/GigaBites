@@ -20,6 +20,7 @@ export const Login = () => {
     const signInWithGoogle = async () => {
         try {
             await signInWithPopup(auth, googleProvider);
+            navigate("/homepage")
         } catch (err) {
             console.error(err);
         }
@@ -37,6 +38,7 @@ export const Login = () => {
     const loginEmailPassword = async () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            navigate("/homepage")
         } catch (err) {
             console.error(err);
         }
@@ -69,7 +71,7 @@ export const Login = () => {
             </div>
             <div className="text">
                 <p>Don't have an account?</p>
-                <span onClick={() => navigate("/signup")}>Sign In</span>
+                <span onClick={() => navigate("/signup")}>Sign Up</span>
             </div>
             
             <div className="submit-container">
