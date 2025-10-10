@@ -62,6 +62,15 @@
 .text {
     display: flex;
     margin: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.ask {
+    display: flex;
+    margin: auto;
     justify-content: center;
     align-items: center;
     gap: 10px;
@@ -112,7 +121,7 @@
   align-items: center;
   text-align: center;
   color: #555;
-  margin: 0px auto 50px;
+  margin: 25px auto 50px;
   width: 480px;
 }
 

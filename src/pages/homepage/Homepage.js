@@ -2,6 +2,12 @@ import { auth } from '../../config/firebase-config';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from "react-router-dom";
 
+import './Homepage.css'
+
+import DivButton from "../../components/DivButton";
+
+
+
 
 export const Homepage = () => {
     const navigate = useNavigate();
@@ -17,9 +23,11 @@ export const Homepage = () => {
     };
 
     return (
-        <div>
+        <div className="container">
             <p>Successfully Logged In as: {auth?.currentUser?.email}</p>
-            <button onClick={logout}> Logout </button>
+            <p style={{margin: "50px 0px"}}> More Updates Soon! </p>
+            <DivButton className="submit" onClick={logout}> Logout </DivButton>
+            
         </div>
         
         

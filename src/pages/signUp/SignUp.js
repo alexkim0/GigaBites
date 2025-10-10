@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, signInWithPopup, signOut, signInWithEma
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import './SignUp.css'
+import DivButton from "../../components/DivButton";
 
 import email_icon from "../../assets/email.png"
 import password_icon from "../../assets/password.png"
@@ -12,15 +13,28 @@ export const SignUp = () => {
     // useState: probably a react function that stores the value to email and use the setEmail function to change the email value...
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate();
 
     console.log(auth?.currentUser?.email);
 
     // function that will run when sign in button is pressed
-    const signIn = async () => {
+    const signUp = async () => {
         try {
             await createUserWithEmailAndPassword(auth, email, password);
+            navigate("/homepage")
         } catch (err) {
             console.error(err);
+            // Check for specific Firebase error codes
+            if (err.code === "auth/email-already-in-use") {
+                setErrorMessage("That account is already linked to another user.");
+            } else if (err.code == "auth/missing-password") {
+                setErrorMessage("A password is required to create your account.");
+            } else if (err.code == "auth/invalid-email") {
+                setErrorMessage("Please enter a valid email address.");
+            } else {
+                setErrorMessage("An unexpected error occurred. Please try again.");
+            }
         }
     };
 
@@ -28,6 +42,7 @@ export const SignUp = () => {
     const signInWithGoogle = async () => {
         try {
             await signInWithPopup(auth, googleProvider);
+            navigate("/homepage")
         } catch (err) {
             console.error(err);
         }
@@ -42,7 +57,7 @@ export const SignUp = () => {
         }
     };
 
-    const navigate = useNavigate();
+
 
     return (
         <div className='container'>
@@ -69,12 +84,19 @@ export const SignUp = () => {
                 </div>
             </div>
             <div className="text">
-                <p>Already have an account?</p>
-                <span onClick={() => navigate("/login")}>Login</span>
+                {errorMessage && (
+                <p style={{ color: "red", marginTop: "10px" }}>{errorMessage}</p>
+                )}
+                <div className="ask">
+                    <p>Already have an account?</p>
+                    <span onClick={() => navigate("/login")}>Login</span>
+                </div>
             </div>
             
             <div className="submit-container">
-                <div className="submit" onClick={signIn}> Sign Up </div>
+                <DivButton className="submit" onClick={signUp}>
+                    Sign Up
+                </DivButton>
                 {/* <div className="submit" onClick={loginEmailPassword}> Login </div> */}
             </div>
 
@@ -82,20 +104,10 @@ export const SignUp = () => {
                 <span>or</span>
             </div>
 
-            <div className="google" onClick={signInWithGoogle}>
+            <DivButton className="google" onClick={signInWithGoogle}>
                 <img src={google_icon} alt=""/>
                 Sign In With Google
-            </div>
-
-
-
-            {/* <button onClick={signIn}> Sign In </button>
-
-            <button onClick={signInWithGoogle}> Sign In With Google </button>
-
-            <button onClick={loginEmailPassword}> LogIn </button> */}
-
-            <button onClick={logout}> Logout </button>
+            </DivButton>
 
         </div>
     );
