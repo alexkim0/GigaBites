@@ -52,6 +52,10 @@ export const Login = () => {
                 setErrorMessage("Please enter a valid email address.");
             } else if (err.code == "auth/invalid-credential") { 
                 setErrorMessage("Invalid email or password. Please try again.");
+            } else if (err.code == "auth/invalid-password") {
+                setErrorMessage("A password must have at least 6 characters.");
+            } else if (err.code == "auth/weak-password") {
+                setErrorMessage("A password must have at least 6 characters.");
             } else {
                 setErrorMessage("An unexpected error occurred. Please try again.");
             }
