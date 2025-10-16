@@ -12,6 +12,7 @@
   import { SignUp } from "./pages/signUp/SignUp";
   import { Login } from "./pages/login/LogIn"
   import { Homepage } from "./pages/homepage/Homepage"
+  import { Feed } from "./pages/feedpage/Feedpage";
 
   function App() {
     // const [testList, setTestList] = useState([]);
