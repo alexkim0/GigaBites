@@ -77,7 +77,7 @@
   margin-top: 8px;
 }
 
-/* Reuse your DivButton; these classes just color it */
+
 .primary {
   background: #ff4655;
   color: #fff;
@@ -113,10 +113,10 @@
   font-weight: 800;
   border-radius: 14px;
 
-  background: #111;               /* strong contrast */
+  background: #111;               
   color: #fff;
   border: none;
-  text-decoration: none;          /* in case DivButton renders an <a> */
+  text-decoration: none;          
   box-shadow: 0 6px 14px rgba(0,0,0,.12);
   transition: transform .06s ease, filter .15s ease;
 }

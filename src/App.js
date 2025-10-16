@@ -1,10 +1,9 @@
-
-  import { useEffect, useState } from "react";
+  // import { useEffect, useState } from "react";
   import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
   // import logo from './logo.svg';
   import './App.css';
-  import { db } from './config/firebase-config';
-  import { getDocs, collection } from 'firebase/firestore';
+  // import { db } from './config/firebase-config';
+  // import { getDocs, collection } from 'firebase/firestore';
   import { useAuth } from "./hooks/AuthProvider";
   import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -70,6 +69,15 @@
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/feed"
+            element={
+              <ProtectedRoute user={currentUser}>
+                <Feed />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
     );
