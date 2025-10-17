@@ -1,24 +1,28 @@
 .profile-page-wrap {
     text-align: center;
+    max-width: 600px;
+    margin: auto;
 }
 
 .pUserIcon {
-    width: 7%;
+    width: 25%;
 }
 
 .pUsernameField {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     font-weight: 700;
+    text-align: center;
 }
 
 .pFollowsField {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    text-align: center;
 }
 
 .profileLogOutBox { 
   margin-top: 24px; 
-  padding-left: 800px;
-  padding-right: 800px;
+  padding-left: 200px;
+  padding-right: 200px;
 }
 
 .profileLogOutBox .profileLogOut {
