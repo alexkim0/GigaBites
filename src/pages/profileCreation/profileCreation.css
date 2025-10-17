@@ -1,14 +1,24 @@
+/* Wrapper */
+.page-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
 /* Header */
 .username-header h1 {
   margin: 0 0 6px;
   font-size: 28px;
   line-height: 1.1;
+  text-align: center;
 }
 
-.signed-in-as {
+.u-signed-in-as {
   font-size: 14px;
   color: #555;
   margin-bottom: 14px;
+  text-align: center;
 }
 
 .username-field {
@@ -19,7 +29,7 @@
     gap: 25px;
 }
 
-.input {
+.username-input {
     display: flex;
     align-items: center;
     margin: auto;
@@ -29,7 +39,7 @@
     border-radius: 6px;
 }
 
-.input input {
+.username-input input {
     height: 50px;
     width: 400px;
     background: transparent;
@@ -37,6 +47,11 @@
     outline: none;
     color: #797979;
     font-size: 19px;
+    padding-left: 30px;
+}
+
+.u-errorMessage {
+  text-align: center;
 }
 
 .text {
@@ -49,14 +64,15 @@
 }
 
 /* Bottom actions */
-.actions {
+.username-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
   margin-top: 8px;
+  padding-left: 130px;
+  padding-right: 130px;
+  text-align: center;
 }
 
-.primary {
+.username-primary {
   background: #ff4655;
   color: #fff;
   border-radius: 12px;
@@ -64,11 +80,13 @@
 }
 
 /* Bigger, full-width logout button */
-.logout-row { 
+.u-logout-row { 
   margin-top: 24px; 
+  padding-left: 120px;
+  padding-right: 120px;
 }
 
-.logout-row .logout.big {
+.u-logout-row .u-logout.big {
   width: 100%;
   display: inline-flex;           /* center text */
   justify-content: center;
@@ -76,9 +94,10 @@
   gap: 10px;
 
   margin: 0;
-  padding: 16px 20px;             /* taller */
-  font-size: 18px;                /* bigger text */
-  font-weight: 800;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-size: 16px;                /* bigger text */
+  font-weight: 700;
   border-radius: 14px;
 
   background: #111;               
