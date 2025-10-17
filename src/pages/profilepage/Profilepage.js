@@ -8,6 +8,7 @@ import { useAuth } from "../../hooks/AuthProvider"
 
 import "./Profilepage.css";
 import DivButton from "../../components/DivButton";
+import userIcon from "../../assets/defaultIcon.png";
 
 export const Profilepage = () => {
     const navigate = useNavigate();
@@ -32,13 +33,16 @@ export const Profilepage = () => {
 
 
     return (
-        <div>
-            <p>{username}</p>
-            <p>{following}</p>
-            <p>{follower}</p>
-            <DivButton className="ghost2" onClick={logout}>
+        <div className="profile-page-wrap">
+            <img className="pUserIcon" src={userIcon} alt=""/>
+            <p className="pUsernameField">{username}</p>
+            <p className="pFollowsField">Following: {following}    |    Follower: {follower}</p>
+            <p className="pVideos"> VIDEOS WILL GO HERE </p>
+            <div className="profileLogOutBox"> 
+                <DivButton className="profileLogOut" onClick={logout}>
                 Logout
             </DivButton>
+            </div>
         </div>
     )
 

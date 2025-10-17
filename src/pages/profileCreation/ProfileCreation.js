@@ -25,7 +25,6 @@ export const ProfileCreation = () => {
             setErrorMessage("Create a username.");
         }
         else {
-            alert(`Saved Username: ${username}`);
             console.log(currentUser.uid)
             updateUsername(currentUser.uid, username)
             navigate("/feed");
