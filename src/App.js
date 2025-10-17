@@ -72,7 +72,7 @@
             <Route
               path="/homepage"
               element={
-                <ProtectedRoute user={currentUser}>
+                <ProtectedRoute redirectIfPref={"/feed"}>
                   <Homepage />
                 </ProtectedRoute>
               }
@@ -80,7 +80,7 @@
             <Route
               path="/feed"
               element={
-                <ProtectedRoute user={currentUser}>
+                <ProtectedRoute>
                   <Feed />
                 </ProtectedRoute>
               }
@@ -88,6 +88,34 @@
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
+        {/* <Routes>
+          <Route
+            path="/"
+            element={currentUser ? <Navigate to="/homepage" /> : <Login />}
+          />
+          <Route
+            path="/login"
+            element={currentUser ? <Navigate to="/homepage" /> : <Login />}
+          />
+          <Route path="/signup" element={<SignUp/>}/>
+          <Route
+            path="/homepage"
+            element={
+              <ProtectedRoute redirectIfPref={"/feed"}>
+                <Homepage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/feed"
+            element={
+              <ProtectedRoute>
+                <Feed />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes> */}
       </Router>
     );
   }

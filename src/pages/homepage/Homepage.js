@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import { auth } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { db } from '../../config/firebase-config';
+import { getDocs, collection, addDoc, updateDoc, doc } from 'firebase/firestore';
 
 import "./Homepage.css";
 import DivButton from "../../components/DivButton";
+
+
 
 const FOOD_OPTIONS = [ /* Add more options as needed just a temporary list*/
   { id: "japanese", label: "Japanese", emoji: "🍣" },
@@ -27,8 +31,16 @@ const FOOD_OPTIONS = [ /* Add more options as needed just a temporary list*/
 
 
 export const Homepage = () => {
+  const user = auth.currentUser;
+  const currentUserDataRef = doc(db, "user", user.uid);
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
+
+
+  if (!user) {
+    // handle not-logged-in state
+    return <p>Please log in first.</p>;
+  }
 
   const toggle = (item) => {
     setSelected((prev) =>
@@ -36,8 +48,15 @@ export const Homepage = () => {
     );
   };
 
-  const saveInterests = () => {
-    alert(`Saved interests: ${selected.join(", ") || "(none)"}`);
+  const saveInterests = async () => {
+    // alert(`Saved interests: ${selected.join(", ") || "(none)"}`);
+    try {
+      await updateDoc(currentUserDataRef, {
+        user_pref: selected,
+      })
+    } catch(err) {
+      console.error(err)
+    }
     navigate("/feed");
     };
 

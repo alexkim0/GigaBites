@@ -2,6 +2,8 @@ import { auth, googleProvider } from '../../config/firebase-config';
 import { createUserWithEmailAndPassword, signInWithPopup, signOut, signInWithEmailAndPassword } from 'firebase/auth'
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { db } from '../../config/firebase-config';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import './Login.css'
 import DivButton from "../../components/DivButton";
 
@@ -22,8 +24,20 @@ export const Login = () => {
     // function that will run when signInWithGoogle button is pressed
     const signInWithGoogle = async () => {
         try {
-            await signInWithPopup(auth, googleProvider);
-            navigate("/homepage")
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+
+            const userDocRef = doc(db, "user", user.uid);
+
+            const userSnap = await getDoc(userDocRef);
+
+            if (!userSnap.exists()) {
+                await createUserData(db, user, user.email);
+                console.log("new user document created in Firestore");
+            } else {
+                console.log("user already exists, skipping Firestore creation");
+            }
+            navigate("/homepage");
         } catch (err) {
             console.error(err);
         }
@@ -62,6 +76,26 @@ export const Login = () => {
             }
         }
     };
+
+    const createUserData = async (db, user, email) => {
+        // Gets the document reference of the user
+        const userDocRef = doc(db, "user", user.uid);
+
+        await setDoc(userDocRef, {
+            user_email: email,
+            user_name: "",
+            user_ID: user.uid,
+            user_pfp: "",
+            user_bio: "",
+            user_following: 0,
+            user_follower: 0,
+            user_pref: [],
+            createdAt: new Date(),
+        });
+
+        console.log("Firestore user profile is created...");
+    }
+    
 
 
     return (

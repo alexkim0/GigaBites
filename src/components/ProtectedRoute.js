@@ -1,9 +1,45 @@
-import { Navigate } from "react-router-dom";
+// import { Navigate } from "react-router-dom";
+// import { doc, getDoc } from "firebase/firestore";
+// import { useAuth } from "../hooks/AuthProvider";
+// import { db } from "../config/firebase-config";
 
-const ProtectedRoute = ({ user, children }) => {
-  if (!user) {
-    return <Navigate to="/login" replace />;
+// const ProtectedRoute = ({ user, children }) => {
+//   const userDocRef = doc(db, "user", user.uid);
+//   const userSnap = getDoc(userDocRef);
+//   const userData = userSnap.data();
+
+//   if (!user) {
+//     return <Navigate to="/login" replace />;
+//   } else if (userData.user_pref && Object.keys(userData.user_pref).length > 0) {
+//     return <Navigate to="/feed" replace />
+//   }
+//   return children;
+// };
+
+// export default ProtectedRoute;
+
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/AuthProvider";
+
+const ProtectedRoute = ({ children, redirectIfPref = null }) => {
+  const { currentUser, loading } = useAuth();
+
+  // Show loading state while auth / Firestore data is being fetched
+  if (loading) return <p>Loading...</p>;
+
+  // Redirect to login if not authenticated
+  if (!currentUser) return <Navigate to="/login" replace />;
+
+  // Redirect if user_pref exists and redirectIfPref is provided
+  if (
+    redirectIfPref &&
+    currentUser.userData?.user_pref &&
+    Object.keys(currentUser.userData.user_pref).length > 0
+  ) {
+    return <Navigate to={redirectIfPref} replace />;
   }
+
+  // Otherwise, render the protected page
   return children;
 };
 
