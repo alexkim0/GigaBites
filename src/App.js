@@ -14,6 +14,7 @@
   import { Homepage } from "./pages/homepage/Homepage"
   import { Feed } from "./pages/feedpage/Feedpage";
   import { ProfileCreation } from "./pages/profileCreation/ProfileCreation";
+  import { Profilepage } from "./pages/profilepage/Profilepage";
 
   function App() {
     // const [testList, setTestList] = useState([]);
@@ -81,7 +82,7 @@
             <Route
               path="/profileCreation"
               element={
-                <ProtectedRoute redirectIfPref={"/profileCreation"}>
+                <ProtectedRoute redirectIfName={"/feed"}>
                   <ProfileCreation />
                 </ProtectedRoute>
               }
@@ -94,37 +95,18 @@
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/profilepage"
+              element={
+                <ProtectedRoute>
+                  <Profilepage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
-        {/* <Routes>
-          <Route
-            path="/"
-            element={currentUser ? <Navigate to="/homepage" /> : <Login />}
-          />
-          <Route
-            path="/login"
-            element={currentUser ? <Navigate to="/homepage" /> : <Login />}
-          />
-          <Route path="/signup" element={<SignUp/>}/>
-          <Route
-            path="/homepage"
-            element={
-              <ProtectedRoute redirectIfPref={"/feed"}>
-                <Homepage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/feed"
-            element={
-              <ProtectedRoute>
-                <Feed />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes> */}
       </Router>
     );
   }

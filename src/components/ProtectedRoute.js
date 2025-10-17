@@ -21,7 +21,8 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/AuthProvider";
 
-const ProtectedRoute = ({ children, redirectIfPref = null }) => {
+
+const ProtectedRoute = ({ children, redirectIfPref = null, redirectIfName = null }) => {
   const { currentUser, loading } = useAuth();
 
   // Show loading state while auth / Firestore data is being fetched
@@ -39,8 +40,46 @@ const ProtectedRoute = ({ children, redirectIfPref = null }) => {
     return <Navigate to={redirectIfPref} replace />;
   }
 
+  if (
+    redirectIfName &&
+    currentUser.userData?.user_name?.trim()
+  ) {
+    return <Navigate to={redirectIfName} replace />;
+  }
+
   // Otherwise, render the protected page
   return children;
 };
 
 export default ProtectedRoute;
+
+// import { Navigate, useLocation } from "react-router-dom";
+// import { useAuth } from "../hooks/AuthProvider";
+// import { useEffect, useState } from "react";
+
+// const ProtectedRoute = ({ children, redirectIfPref = null, redirectIfName = null }) => {
+//   const { currentUser, loading } = useAuth();
+//   const location = useLocation(); // Detect route changes
+//   const [redirectTo, setRedirectTo] = useState(null);
+
+//   // Check redirect conditions on currentUser or location change
+//   useEffect(() => {
+//     if (!currentUser) return;
+
+//     if (redirectIfPref && currentUser.userData?.user_pref?.length > 0) {
+//       setRedirectTo(redirectIfPref);
+//     } else if (redirectIfName && currentUser.userData?.user_name?.trim()) {
+//       setRedirectTo(redirectIfName);
+//     } else {
+//       setRedirectTo(null);
+//     }
+//   }, [currentUser, location, redirectIfPref, redirectIfName]);
+
+//   if (loading) return <p>Loading...</p>;
+//   if (!currentUser) return <Navigate to="/login" replace />;
+//   if (redirectTo) return <Navigate to={redirectTo} replace />;
+
+//   return children;
+// };
+
+// export default ProtectedRoute;

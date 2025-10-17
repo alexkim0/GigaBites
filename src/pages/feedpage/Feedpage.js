@@ -17,6 +17,14 @@ export const Feed = () => {
     }
   };
 
+  const profilePage = async () => {
+    try {
+      navigate("/profilepage")
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   return (
     <main className="feed-dev-wrap">
       <section className="feed-dev-card">
@@ -38,7 +46,11 @@ export const Feed = () => {
           <DivButton className="ghost2" onClick={logout}>
             Logout
           </DivButton>
+          <DivButton className="ghost2" onClick={profilePage}>
+            View profile
+          </DivButton>
         </footer>
+        
       </section>
     </main>
   );
