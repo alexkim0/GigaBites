@@ -33,7 +33,7 @@ export const SignUp = () => {
             } else if (err.code == "auth/invalid-email") {
                 setErrorMessage("Please enter a valid email address.");
             } else if (err.code == "auth/invalid-password") {
-                setErrorMessage("A password must have at least 6 characters.");
+                setErrorMessage("Invalid password.");
             } else if (err.code == "auth/weak-password") {
                 setErrorMessage("A password must have at least 6 characters.");
             } else {
