@@ -64,55 +64,57 @@ export const SignUp = () => {
 
 
     return (
-        <div className='container'>
-            <div className="header">
-                <div className="signUpText">Sign Up</div>
-                <div className="underline"></div>
-            </div>
-            <div className="inputs">
-                <div className="input">
-                    <img src={email_icon} alt=""/>
-                    <input 
-                        placeholder="Email address"
-                        type="email"
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+        <div className='page'>
+            <div className='container'>
+                <div className="header">
+                    <div className="signUpText">Sign Up</div>
+                    <div className="underline"></div>
                 </div>
-                <div className="input">
-                    <img src={password_icon} alt=""/>
-                    <input 
-                        placeholder="Password"
-                        type="password"
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                <div className="inputs">
+                    <div className="input">
+                        <img src={email_icon} alt=""/>
+                        <input 
+                            placeholder="Email address"
+                            type="email"
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div className="input">
+                        <img src={password_icon} alt=""/>
+                        <input 
+                            placeholder="Password"
+                            type="password"
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
                 </div>
-            </div>
-            <div className="text">
-                {errorMessage && (
-                <p style={{ color: "red", marginTop: "10px" }}>{errorMessage}</p>
-                )}
-                <div className="ask">
-                    <p>Already have an account?</p>
-                    <span onClick={() => navigate("/login")}>Login</span>
+                <div className="text">
+                    {errorMessage && (
+                    <p style={{ color: "red", marginTop: "10px" }}>{errorMessage}</p>
+                    )}
+                    <div className="ask">
+                        <p>Already have an account?</p>
+                        <span onClick={() => navigate("/login")}>Login</span>
+                    </div>
                 </div>
-            </div>
-            
-            <div className="submit-container">
-                <DivButton className="submit" onClick={signUp}>
-                    Sign Up
+                
+                <div className="submit-container">
+                    <DivButton className="submit" onClick={signUp}>
+                        Sign Up
+                    </DivButton>
+                    {/* <div className="submit" onClick={loginEmailPassword}> Login </div> */}
+                </div>
+
+                <div className="divider">
+                    <span>or</span>
+                </div>
+
+                <DivButton className="google" onClick={signInWithGoogle}>
+                    <img src={google_icon} alt=""/>
+                    Sign In With Google
                 </DivButton>
-                {/* <div className="submit" onClick={loginEmailPassword}> Login </div> */}
+
             </div>
-
-            <div className="divider">
-                <span>or</span>
-            </div>
-
-            <DivButton className="google" onClick={signInWithGoogle}>
-                <img src={google_icon} alt=""/>
-                Sign In With Google
-            </DivButton>
-
         </div>
     );
 }
