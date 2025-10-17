@@ -1,11 +1,12 @@
   // import { useEffect, useState } from "react";
-  import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+  import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
   // import logo from './logo.svg';
   import './App.css';
   // import { db } from './config/firebase-config';
   // import { getDocs, collection } from 'firebase/firestore';
   import { useAuth } from "./hooks/AuthProvider";
   import ProtectedRoute from "./components/ProtectedRoute";
+  import logo from './assets/logo.png';
 
 
   import { SignUp } from "./pages/signUp/SignUp";
@@ -51,34 +52,42 @@
 
     return (
       <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={currentUser ? <Navigate to="/homepage" /> : <Login />}
-          />
-          <Route
-            path="/login"
-            element={currentUser ? <Navigate to="/homepage" /> : <Login />}
-          />
-          <Route path="/signup" element={<SignUp/>}/>
-          <Route
-            path="/homepage"
-            element={
-              <ProtectedRoute user={currentUser}>
-                <Homepage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/feed"
-            element={
-              <ProtectedRoute user={currentUser}>
-                <Feed />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+        <div className="app">
+          <header className="logo-header">
+            <Link to ="/feed">
+              <img src={logo} className="logo" alt="logo" />
+            </Link>
+          </header>
+
+          <Routes>
+            <Route
+              path="/"
+              element={currentUser ? <Navigate to="/homepage" /> : <Login />}
+            />
+            <Route
+              path="/login"
+              element={currentUser ? <Navigate to="/homepage" /> : <Login />}
+            />
+            <Route path="/signup" element={<SignUp/>}/>
+            <Route
+              path="/homepage"
+              element={
+                <ProtectedRoute user={currentUser}>
+                  <Homepage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feed"
+              element={
+                <ProtectedRoute user={currentUser}>
+                  <Feed />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
       </Router>
     );
   }
