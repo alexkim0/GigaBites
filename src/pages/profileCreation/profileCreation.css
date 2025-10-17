@@ -1,0 +1,90 @@
+/* Header */
+.username-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.signed-in-as {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 14px;
+}
+
+.username-field {
+    display: flex;
+    flex-direction: column;
+    margin-top: 55px;
+    margin-bottom: 20px;
+    gap: 25px;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: #eaeaea;
+    border-radius: 6px;
+}
+
+.input input {
+    height: 50px;
+    width: 400px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 19px;
+}
+
+.text {
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Bottom actions */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.primary {
+  background: #ff4655;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+/* Bigger, full-width logout button */
+.logout-row { 
+  margin-top: 24px; 
+}
+
+.logout-row .logout.big {
+  width: 100%;
+  display: inline-flex;           /* center text */
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0;
+  padding: 16px 20px;             /* taller */
+  font-size: 18px;                /* bigger text */
+  font-weight: 800;
+  border-radius: 14px;
+
+  background: #111;               
+  color: #fff;
+  border: none;
+  text-decoration: none;          
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+  transition: transform .06s ease, filter .15s ease;
+}

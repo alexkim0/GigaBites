@@ -57,7 +57,7 @@ export const Homepage = () => {
     } catch(err) {
       console.error(err)
     }
-    navigate("/feed");
+    navigate("/profileCreation");
     };
 
   const logout = async () => {
@@ -99,7 +99,7 @@ export const Homepage = () => {
 
 
       <div className="actions">
-        <DivButton className="ghost" onClick={() => navigate("/feed")}>
+        <DivButton className="ghost" onClick={() => navigate("/profileCreation")}>
           Skip
         </DivButton>
         <DivButton

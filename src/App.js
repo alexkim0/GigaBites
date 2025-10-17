@@ -13,6 +13,7 @@
   import { Login } from "./pages/login/LogIn"
   import { Homepage } from "./pages/homepage/Homepage"
   import { Feed } from "./pages/feedpage/Feedpage";
+  import { ProfileCreation } from "./pages/profileCreation/ProfileCreation";
 
   function App() {
     // const [testList, setTestList] = useState([]);
@@ -72,8 +73,16 @@
             <Route
               path="/homepage"
               element={
-                <ProtectedRoute redirectIfPref={"/feed"}>
+                <ProtectedRoute redirectIfPref={"/profileCreation"}>
                   <Homepage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profileCreation"
+              element={
+                <ProtectedRoute redirectIfPref={"/profileCreation"}>
+                  <ProfileCreation />
                 </ProtectedRoute>
               }
             />

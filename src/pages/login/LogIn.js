@@ -10,7 +10,6 @@ import DivButton from "../../components/DivButton";
 import email_icon from "../../assets/email.png"
 import password_icon from "../../assets/password.png"
 import google_icon from '../../assets/Google__G__logo.svg'
-import backgroundImage from "../../assets/backgroundImage.png"
 
 export const Login = () => {
     // useState: probably a react function that stores the value to email and use the setEmail function to change the email value...
@@ -61,15 +60,15 @@ export const Login = () => {
             // Check for specific Firebase error codes
             if (err.code === "auth/email-already-in-use") {
                 setErrorMessage("That account is already linked to another user.");
-            } else if (err.code == "auth/missing-password") {
+            } else if (err.code === "auth/missing-password") {
                 setErrorMessage("A password is required to log in to your account.");
-            } else if (err.code == "auth/invalid-email") {
+            } else if (err.code === "auth/invalid-email") {
                 setErrorMessage("Please enter a valid email address.");
-            } else if (err.code == "auth/invalid-credential") { 
+            } else if (err.code === "auth/invalid-credential") { 
                 setErrorMessage("Invalid email or password. Please try again.");
-            } else if (err.code == "auth/invalid-password") {
+            } else if (err.code === "auth/invalid-password") {
                 setErrorMessage("Invalid password.");
-            } else if (err.code == "auth/weak-password") {
+            } else if (err.code === "auth/weak-password") {
                 setErrorMessage("A password must have at least 6 characters.");
             } else {
                 setErrorMessage("An unexpected error occurred. Please try again.");

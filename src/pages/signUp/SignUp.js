@@ -32,13 +32,13 @@ export const SignUp = () => {
             // Check for specific Firebase error codes
             if (err.code === "auth/email-already-in-use") {
                 setErrorMessage("That account is already linked to another user.");
-            } else if (err.code == "auth/missing-password") {
+            } else if (err.code === "auth/missing-password") {
                 setErrorMessage("A password is required to create your account.");
-            } else if (err.code == "auth/invalid-email") {
+            } else if (err.code === "auth/invalid-email") {
                 setErrorMessage("Please enter a valid email address.");
-            } else if (err.code == "auth/invalid-password") {
+            } else if (err.code === "auth/invalid-password") {
                 setErrorMessage("Invalid password.");
-            } else if (err.code == "auth/weak-password") {
+            } else if (err.code === "auth/weak-password") {
                 setErrorMessage("A password must have at least 6 characters.");
             } else {
                 setErrorMessage("An unexpected error occurred. Please try again.");
