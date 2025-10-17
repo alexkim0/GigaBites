@@ -59,16 +59,16 @@ export const ProfileCreation = () => {
     };
     
     return (
-        <div className="page">
+        <div className="page-wrap">
             <header className="username-header">
                 <h1>Create a Username</h1>
-                <div className="signed-in-as">
+                <div className="u-signed-in-as">
                     Signed in as <strong>{auth?.currentUser?.email}</strong>
                 </div>
             </header>
 
             <div className="username-field">
-                <div className="input">
+                <div className="username-input">
                     <input 
                         placeholder="Username"
                         type="username"
@@ -77,23 +77,23 @@ export const ProfileCreation = () => {
                 </div>
             </div>
             
-            <div className="errorMessage">
+            <div className="u-errorMessage">
                 {errorMessage && (
                     <p style={{ color: "red", marginTop: "10px" }}>{errorMessage}</p>
                 )}
             </div>
 
-            <div className="actions">
+            <div className="username-actions">
                 <DivButton
-                    className="primary"
+                    className="username-primary"
                     onClick={saveUsername}
                 >
                     Next
                 </DivButton>   
             </div>
 
-            <div className="logout-row">
-                <DivButton className="logout big" onClick={logout}>Logout</DivButton>
+            <div className="u-logout-row">
+                <DivButton className="u-logout big" onClick={logout}>Logout</DivButton>
             </div>
 
         </div>

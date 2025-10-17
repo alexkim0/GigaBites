@@ -36,7 +36,7 @@ export const Profilepage = () => {
             <p>{username}</p>
             <p>{following}</p>
             <p>{follower}</p>
-            <DivButton className="ghost2" OnClick={logout}>
+            <DivButton className="ghost2" onClick={logout}>
                 Logout
             </DivButton>
         </div>
