@@ -19,9 +19,17 @@ export const Feed = () => {
 
   const profilePage = async () => {
     try {
-      navigate("/profilepage")
+      navigate("/profilepage");
     } catch (err) {
-      console.error(err)
+      console.error(err);
+    }
+  }
+
+  const createPage = async () => {
+    try {
+      navigate("/createpage");
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -48,6 +56,9 @@ export const Feed = () => {
           </DivButton>
           <DivButton className="ghost2" onClick={profilePage}>
             View profile
+          </DivButton>
+          <DivButton className="ghost2" onClick={createPage}>
+            Create Post
           </DivButton>
         </footer>
         

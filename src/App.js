@@ -15,6 +15,7 @@
   import { Feed } from "./pages/feedpage/Feedpage";
   import { ProfileCreation } from "./pages/profileCreation/ProfileCreation";
   import { Profilepage } from "./pages/profilepage/Profilepage";
+  import { Createpage } from "./pages/createpage/Createpage"
 
   function App() {
     // const [testList, setTestList] = useState([]);
@@ -100,6 +101,14 @@
               element={
                 <ProtectedRoute>
                   <Profilepage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/createpage"
+              element={
+                <ProtectedRoute>
+                  <Createpage/>
                 </ProtectedRoute>
               }
             />
