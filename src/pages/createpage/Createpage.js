@@ -64,6 +64,7 @@ export const Createpage = () => {
             const { downloadURL } = await CreatePostWithUpload(file, {
                 onProgress: (pct) => setUploadPct(pct),
             });
+            console.log(uploadPct);
             setUploadedURL(downloadURL);
         } catch (err) {
             console.error(err);
@@ -76,12 +77,17 @@ export const Createpage = () => {
 
 
     return (
-        <div>
-            <DivButton 
-            className="ghost"
-            onClick={openPicker}>
-                Upload Video
-            </DivButton>
+        <div className="createpage">
+            {!file && (
+                
+
+                <div className="button-container">
+                    <DivButton className="select-button" onClick={openPicker}>
+                        Select File
+                    </DivButton>
+                </div>
+            )}
+
             {/* Hidden input that opens the OS file picker */}
             <input
                 ref={fileInputRef}
@@ -94,7 +100,7 @@ export const Createpage = () => {
             {error && <p style={{ color: "crimson"}}>{error}</p>}
 
             {file && (
-                <div>
+                <div className="uploading-container">
                     <div className="video-info">
                         Selected: <strong>{file.name}</strong>{" "}
                         ({(file.size / (1024 * 1024)).toFixed(2)} MB) —{" "}
@@ -106,17 +112,17 @@ export const Createpage = () => {
                         <img
                             src={previewURL}
                             alt="Selected preview"
-                            className="w-full max-w-xl rounded-lg object-contain"
+                            className="preview-img"
                         />
                     )}
 
                     {previewURL && isVideo(file) && (
-                        <video>
+                        <video
                             key={previewURL}
                             src={previewURL}
                             controls
-                            className="w-full max-w-xl rounded-lg"
-                        </video>
+                            className="preview-video"
+                        />
                     )}
 
                     {/* Upload button + progress */}
@@ -126,15 +132,15 @@ export const Createpage = () => {
                         disabled={uploading}
                         className="ghost"
                         >
-                            {uploading ? "Uploading…" : "Upload to Firebase"}
+                        {uploading ? "Uploading…" : "Upload to Firebase"}
                         </DivButton>
 
                         {uploading && (
-                            <div className="outer-bar">
+                            <div className="progress-track">
                                 <div 
-                                className="pct-visual"
+                                className="progress-fill"
                                 style={{ width: `${uploadPct}` }}
-                                 />
+                                ></div>
                             </div>
                         )}
 
