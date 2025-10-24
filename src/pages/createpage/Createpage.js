@@ -16,6 +16,7 @@ export const Createpage = () => {
     const [uploadPct, setUploadPct] = useState(0);
     const [uploading, setUploading] = useState(false);
     const [uploadedURL, setUploadedURL] = useState("");
+    const [caption, setCaption] = useState("");
 
     const isImage = (f) => f?.type?.startsWith("image/");
     const isVideo = (f) => f?.type?.startsWith("video/")
@@ -62,6 +63,7 @@ export const Createpage = () => {
         try {
             setUploading(true);
             const { downloadURL } = await CreatePostWithUpload(file, {
+                caption,
                 onProgress: (pct) => setUploadPct(pct),
             });
             console.log(uploadPct);
@@ -71,6 +73,7 @@ export const Createpage = () => {
             setError(err.message || "Upload failed");
         } finally {
             setUploading(false);
+            console.log("navigating")
         }
     };
 
@@ -101,29 +104,41 @@ export const Createpage = () => {
 
             {file && (
                 <div className="uploading-container">
-                    <div className="video-info">
-                        Selected: <strong>{file.name}</strong>{" "}
-                        ({(file.size / (1024 * 1024)).toFixed(2)} MB) —{" "}
-                        {isImage(file) ? "Image" : isVideo(file) ? "Video" : "Unknown"}
+                    <div className="split-container">
+                        <textarea
+                        value={caption}
+                        onChange={(e) => setCaption(e.target.value)}
+                        placeholder="Write a caption..."
+                        className="caption-input"
+                        />
+                        <div className="preview-container">
+                            {/* Preview */}
+                            {previewURL && isImage(file) &&  (
+                                <img
+                                    src={previewURL}
+                                    alt="Selected preview"
+                                    className="preview-img"
+                                />
+                            )}
+
+                            {previewURL && isVideo(file) && (
+                                <video
+                                    key={previewURL}
+                                    src={previewURL}
+                                    controls
+                                    className="preview-video"
+                                />
+                            )}
+                            <div className="video-info">
+                                Selected: <strong>{file.name}</strong>{" "}
+                                ({(file.size / (1024 * 1024)).toFixed(2)} MB) —{" "}
+                                {isImage(file) ? "Image" : isVideo(file) ? "Video" : "Unknown"}
+                            </div>
+                        </div>
+
                     </div>
+                    {/* Caption input */}
 
-                    {/* Preview */}
-                    {previewURL && isImage(file) &&  (
-                        <img
-                            src={previewURL}
-                            alt="Selected preview"
-                            className="preview-img"
-                        />
-                    )}
-
-                    {previewURL && isVideo(file) && (
-                        <video
-                            key={previewURL}
-                            src={previewURL}
-                            controls
-                            className="preview-video"
-                        />
-                    )}
 
                     {/* Upload button + progress */}
                     <div className="upload-status">
@@ -132,7 +147,7 @@ export const Createpage = () => {
                         disabled={uploading}
                         className="ghost"
                         >
-                        {uploading ? "Uploading…" : "Upload to Firebase"}
+                        {uploading ? "Posting…" : "Post"}
                         </DivButton>
 
                         {uploading && (

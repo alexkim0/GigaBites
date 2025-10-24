@@ -36,7 +36,7 @@ async function getClientMediaMeta(file) {
 }
 
 export async function CreatePostWithUpload(file, opts = {}) {
-    const { onProgress } = opts;
+    const { caption = "", onProgress } = opts;
 
     // checks if user is signed in or not
     const user = auth.currentUser;
@@ -52,6 +52,7 @@ export async function CreatePostWithUpload(file, opts = {}) {
         post_authorId: user.uid,
         post_url: "",
         post_type: isVideo ? "video" : "image",
+        post_caption: caption,
         post_media: [],
         post_date: serverTimestamp(),
         post_likeCount: 0,
