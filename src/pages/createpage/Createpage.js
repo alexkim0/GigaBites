@@ -3,6 +3,7 @@ import { auth } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import DivButton from "../../components/DivButton";
+import toast from "react-hot-toast"
 
 import { CreatePostWithUpload } from "../../hooks/CreatePostWithUpload";
 
@@ -10,6 +11,7 @@ import "./Createpage.css";
 
 export const Createpage = () => {
     const fileInputRef = useRef(null);
+    const navigate = useNavigate();
     const [file, setFile] = useState(null);
     const [previewURL, setPreviewURL] = useState(null);
     const [error, setError] = useState("");
@@ -68,6 +70,8 @@ export const Createpage = () => {
             });
             console.log(uploadPct);
             setUploadedURL(downloadURL);
+            toast.success("Post uploaded!");
+            navigate("/feed");
         } catch (err) {
             console.error(err);
             setError(err.message || "Upload failed");

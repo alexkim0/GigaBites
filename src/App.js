@@ -1,5 +1,6 @@
   // import { useEffect, useState } from "react";
   import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
+  import { Toaster } from "react-hot-toast";
   // import logo from './logo.svg';
   import './App.css';
   // import { db } from './config/firebase-config';
@@ -55,6 +56,7 @@
 
     return (
       <Router>
+        <Toaster position="top-right"/>
         <div className="app">
           <header className="logo-header">
             <Link to ="/feed">
