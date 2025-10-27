@@ -7,6 +7,7 @@ import "./Feedpage.css";
 
 export const Feed = () => {
   const navigate = useNavigate();
+  const uid = auth.currentUser?.uid;
 
   const logout = async () => {
     try {
@@ -19,7 +20,7 @@ export const Feed = () => {
 
   const profilePage = async () => {
     try {
-      navigate("/profilepage");
+      navigate(`/profilepage/${uid}`);
     } catch (err) {
       console.error(err);
     }

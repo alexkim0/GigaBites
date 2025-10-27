@@ -99,7 +99,7 @@
               }
             />
             <Route
-              path="/profilepage"
+              path="/profilepage/:uid"
               element={
                 <ProtectedRoute>
                   <Profilepage />

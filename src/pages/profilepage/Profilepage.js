@@ -1,28 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { auth } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from '../../config/firebase-config';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from "../../hooks/AuthProvider"
+import { UseUserPosts } from "../../hooks/UseUserPosts"
 
 import "./Profilepage.css";
 import DivButton from "../../components/DivButton";
 import userIcon from "../../assets/defaultIcon.png";
 
 export const Profilepage = () => {
+    const user = auth.currentUser;
     const navigate = useNavigate();
+    const { uid } = useParams();
+    const { currentUser, loading } = useAuth();
+    const { posts, loadingPost, hasMore, loadMore } = UseUserPosts(user.uid, 18);
+
+    // 👇 this useEffect runs whenever posts changes
+    useEffect(() => {
+        if (posts.length > 0) {
+        console.log("Fetched posts:", posts);
+        }
+    }, [posts]);
+
+    if (!user) {
+        return <p>You must be logged in to view your profile.</p>;
+    }
 
     const logout = async () => {
         try {
-        await signOut(auth);
-        navigate("/login");
+            await signOut(auth);
+            navigate("/login");
         } catch (err) {
-        console.error(err);
+            console.error(err);
         }
     };
 
-    const { currentUser, loading } = useAuth();
+
 
     if (loading) return <p>Loading...</p>;
 
@@ -42,6 +58,10 @@ export const Profilepage = () => {
                 <DivButton className="profileLogOut" onClick={logout}>
                 Logout
             </DivButton>
+            </div>
+            <div>
+                <h2>Profile of {uid}</h2>
+                <p>Total posts: {posts.length}</p>
             </div>
         </div>
     )
