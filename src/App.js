@@ -8,6 +8,7 @@
   import { useAuth } from "./hooks/AuthProvider";
   import ProtectedRoute from "./components/ProtectedRoute";
   import logo from './assets/logo.png';
+  import Sidebar from "./components/Sidebar";
 
 
   import { SignUp } from "./pages/signUp/SignUp";
@@ -57,67 +58,71 @@
     return (
       <Router>
         <Toaster position="top-right"/>
-        <div className="app">
-          <header className="logo-header">
-            <Link to ="/feed">
-              <img src={logo} className="logo" alt="logo" />
-            </Link>
-          </header>
+          <div className="app-container">
+            {currentUser && <Sidebar />}
+            
+            <div className="app">
+              <header className="logo-header">
+                <Link to ="/feed">
+                  <img src={logo} className="logo" alt="logo" />
+                </Link>
+              </header>
 
-          <Routes>
-            <Route
-              path="/"
-              element={currentUser ? <Navigate to="/homepage" /> : <Login />}
-            />
-            <Route
-              path="/login"
-              element={currentUser ? <Navigate to="/homepage" /> : <Login />}
-            />
-            <Route path="/signup" element={<SignUp/>}/>
-            <Route
-              path="/homepage"
-              element={
-                <ProtectedRoute redirectIfPref={"/profileCreation"}>
-                  <Homepage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profileCreation"
-              element={
-                <ProtectedRoute redirectIfName={"/feed"}>
-                  <ProfileCreation />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/feed"
-              element={
-                <ProtectedRoute>
-                  <Feed />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profilepage/:uid"
-              element={
-                <ProtectedRoute>
-                  <Profilepage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/createpage"
-              element={
-                <ProtectedRoute>
-                  <Createpage/>
-                </ProtectedRoute>
-              }
-            />
+              <Routes>
+                <Route
+                  path="/"
+                  element={currentUser ? <Navigate to="/homepage" /> : <Login />}
+                />
+                <Route
+                  path="/login"
+                  element={currentUser ? <Navigate to="/homepage" /> : <Login />}
+                />
+                <Route path="/signup" element={<SignUp/>}/>
+                <Route
+                  path="/homepage"
+                  element={
+                    <ProtectedRoute redirectIfPref={"/profileCreation"}>
+                      <Homepage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profileCreation"
+                  element={
+                    <ProtectedRoute redirectIfName={"/feed"}>
+                      <ProfileCreation />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/feed"
+                  element={
+                    <ProtectedRoute>
+                      <Feed />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profilepage/:uid"
+                  element={
+                    <ProtectedRoute>
+                      <Profilepage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/createpage"
+                  element={
+                    <ProtectedRoute>
+                      <Createpage/>
+                    </ProtectedRoute>
+                  }
+                />
 
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </div>
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </div>
+          </div>
       </Router>
     );
   }
