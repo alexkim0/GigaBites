@@ -10,16 +10,21 @@
 
 .logo-header {
   position: fixed;
-  top: 20px; /* adjust as needed */
+  top: 10px; /* adjust as needed */
   left: 20px; /* adjust as needed */
   z-index: 100;
 }
 
 .logo {
-  width: 50px; /* adjust size */
+  width: 50px;
   height: auto;
-  cursor: pointer; /* indicates it's clickable */
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, opacity 0.12s ease;
 }
+.logo:hover { transform: translateY(-1px); }
+.logo:active { transform: translateY(0); opacity: 0.9; }
 .App-header {
   background-color: #282c34;
   min-height: 100vh;

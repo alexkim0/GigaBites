@@ -5,7 +5,6 @@
   padding: 24px;
   background: radial-gradient(1200px 600px at 10% 0%, #fafafa 0%, #f2f2f2 35%, #ececec 100%);
 }
-
 .feed-dev-card {
   width: 100%;
   max-width: 720px;
@@ -14,7 +13,6 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   padding: 32px 28px;
 }
-
 .feed-badge {
   display: inline-block;
   font-size: 12px;
@@ -26,32 +24,207 @@
   padding: 6px 10px;
   margin-bottom: 12px;
 }
-
-.feed-title {
-  margin: 6px 0 8px;
-  font-size: 28px;
-  line-height: 1.2;
-}
-
-.feed-subtitle {
-  margin: 0;
-  color: #555;
-}
-
-.signed-in-as {
-  margin: 22px 0 0;
-  color: #666;
-}
-
-.feed-dev-actions {
-  margin-top: 28px;
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-}
+.feed-title { margin: 6px 0 8px; font-size: 28px; line-height: 1.2; }
+.feed-subtitle { margin: 0; color: #555; }
+.signed-in-as { margin: 22px 0 0; color: #666; }
+.feed-dev-actions { margin-top: 28px; display: flex; gap: 12px; justify-content: flex-end; }
 
 .ghost2 {
-  background: #bebebe;
+  background: #e6e6e6;
+  color: #111;
   border-radius: 12px;
   padding: 12px 14px;
+  border: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, opacity 0.12s ease;
+  user-select: none;
+}
+.ghost2:hover { transform: translateY(-1px); }
+.ghost2:active { transform: translateY(0); opacity: 0.9; }
+.ghost2[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+/* ===============================
+   For You feed (TikTok-style)
+   =============================== */
+
+.fy-root {
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+  background: #0b0b0c;
+  color: #fff;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.fy-root::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(1200px 800px at 20% -10%, rgba(120,120,255,0.10), transparent 60%),
+    radial-gradient(1000px 700px at 80% 110%, rgba(255,120,180,0.10), transparent 60%),
+    radial-gradient(800px 500px at 50% 30%, rgba(255,255,255,0.06), transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(2px);
+}
+.fy-root::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(255,255,255,0.00)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 24px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 24px);
+  pointer-events: none;
+  z-index: 0;
+}
+.fy-header, .fy-dock, .fy-feed { position: relative; z-index: 1; }
+
+.fy-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+}
+
+.fy-dock {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(90px, calc(env(safe-area-inset-bottom) + 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 60;
+}
+
+.fy-feed {
+  position: relative;
+  height: calc(100dvh - 48px);
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fy-userbar {
+  position: sticky;
+  top: 48px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  z-index: 10;
+}
+
+.fy-card {
+  position: relative;
+  height: calc(100dvh - 48px);
+  width: 100%;
+  scroll-snap-align: start;
+  overflow: hidden;
+  background: #ffffff;
+  display: grid;
+  place-items: center;           /* center the fixed-size frame */
+}
+
+/* Fixed 9:16 frame like TikTok */
+.fy-frame {
+  position: relative;
+  width: min(100vw, 420px);      /* phone width feel on desktop */
+  aspect-ratio: 9 / 16;
+  max-height: calc(100dvh - 120px); /* keep some room for header/dock */
+  border-radius: 16px;
+  overflow: hidden;
+  background: #111;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+.fy-media-wrap {
+  position: absolute;
+  inset: 0;
+}
+.fy-media {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;            /* shrink-to-fit, no cropping */
+  display: block;
+  background: #000;               /* letterbox bars look clean */
+}
+.fy-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.55), transparent);
+  pointer-events: none;
+}
+.fy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.45);
+  margin-bottom: 6px;
+  pointer-events: auto;
+}
+.fy-chip .sep { opacity: 0.6; }
+.fy-caption { margin: 4px 0 8px; line-height: 1.25; pointer-events: auto; }
+.fy-meta { display: flex; align-items: center; gap: 8px; opacity: 0.9; font-size: 14px; pointer-events: auto; }
+.fy-avatar { width: 24px; height: 24px; border-radius: 999px; }
+
+.fy-empty {
+  display: grid;
+  place-items: center;
+  height: 60vh;
+  color: rgba(255,255,255,0.85);
+}
+.fy-loading {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.1);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost2,
+  .fy-feed,
+  .fy-dock,
+  .fy-header {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .fy-header { padding: 12px 16px; }
+  .fy-overlay { padding: 18px; }
+}
+
+.fy-feed::-webkit-scrollbar { width: 0; height: 0; }
+
+.fy-card.paused::after {
+  content: "Tap to play";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(0,0,0,0.15);
+  font-size: 14px;
 }
