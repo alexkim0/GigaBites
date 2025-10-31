@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import DivButton from "../../components/DivButton";
 import {collection,onSnapshot,orderBy,query,where,doc,getDoc,} from "firebase/firestore";
 import LikeButton from "../../components/LikeButton/LikeButton"
+import CommentPanel from "../../components/CommentPanel/CommentPanel";
 import "./Feedpage.css";
 
 export const Feed = () => {
@@ -15,6 +16,9 @@ export const Feed = () => {
   const [rawPosts, setRawPosts] = useState([]);
   const [posts, setPosts] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
+
+const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
+const toggleComments = (postId) => setOpenCommentsPostId((cur) => (cur === postId ? null : postId));
 
   const containerRef = useRef(null);
   const authorCacheRef = useRef(new Map());
@@ -222,8 +226,8 @@ export const Feed = () => {
       }),
       React.createElement(
         "button",
-        { className: "comment-btn", onClick: () => console.log("comments", p.id) },
-        "💬"
+        { className: "comment-btn", onClick: () => toggleComments(p.id), title: "Comments" },
+        "💬 ", String(p.commentCount ?? 0)
       ),
       React.createElement(
         "button",
@@ -240,84 +244,91 @@ export const Feed = () => {
       React.createElement(
         "div",
         { className: "fy-post-wrap"},
-      React.createElement(
-        "div",
-        { className: "fy-frame" },                    // NEW fixed-size frame
         React.createElement(
           "div",
-          { className: "fy-media-wrap" },
-          p.type === "video"
-            ? React.createElement("video", {
-                src: p.mediaURL,
-                className: "fy-media",
-                loop: true,
-                muted: soundOnPostId !== p.id,   // unmute only the post we toggled
-                playsInline: true,
-                onClick: (e) => {
-                  const v = e.currentTarget;
-                  if (v.paused) v.play();
-                  else v.pause();
-                },
-              })
-            : React.createElement("img", {
-                src: p.mediaURL,
-                alt: p.caption,
-                className: "fy-media",
-              })
-        ),
-        React.createElement(
-          "div",
-          { className: "fy-overlay" },
-           React.createElement(
-             "div",
-             { className: "fy-chip" },
-             React.createElement(
-               "span",
-               { className: "stars" },
-               (("★".repeat(Math.round(p.stars))) + "☆☆☆☆").slice(0, 5)
-             ),
-             p.restaurant ? React.createElement("span", { className: "sep" }, "·") : null,
-             p.restaurant ? React.createElement("span", { className: "rest" }, p.restaurant) : null,
-             React.createElement("span", { className: "sep" }, "·"),
-             React.createElement(
-               "span",
-               { className: "counts" },
-               "❤ ",
-               p.likeCount,
-               " · 💬 ",
-               p.commentCount
-             )
-           ),
-           React.createElement("p", { className: "fy-caption" }, p.caption),
-
-           React.createElement(
-             "div",
-             { className: "fy-meta" },
-             React.createElement("img", {
-               src: p.author.photoURL || "https://ui-avatars.com/api/?name=U",
-               className: "fy-avatar",
-               alt: "",
-             }),
-             React.createElement(
-               "span",
-               { className: "fy-handle" },
-               "@",
-               p.author.displayName || "user"
-             )
-            ),
+          { className: "fy-frame" },                    // NEW fixed-size frame
+          React.createElement(
+            "div",
+            { className: "fy-media-wrap" },
+            p.type === "video"
+              ? React.createElement("video", {
+                  src: p.mediaURL,
+                  className: "fy-media",
+                  loop: true,
+                  muted: soundOnPostId !== p.id,   // unmute only the post we toggled
+                  playsInline: true,
+                  onClick: (e) => {
+                    const v = e.currentTarget;
+                    if (v.paused) v.play();
+                    else v.pause();
+                  },
+                })
+              : React.createElement("img", {
+                  src: p.mediaURL,
+                  alt: p.caption,
+                  className: "fy-media",
+                })
+          ),
+          React.createElement(
+            "div",
+            { className: "fy-overlay" },
             React.createElement(
-              "button",
-              {
-                type: "button",
-                className: "fy-volbtn",
-                onClick: (e) => { e.stopPropagation(); toggleSound(p.id); },
-                title: soundOnPostId === p.id ? "Mute" : "Unmute",
-              },
-              soundOnPostId === p.id ? "🔊" : "🔇"
-            )
+              "div",
+              { className: "fy-chip" },
+              React.createElement(
+                "span",
+                { className: "stars" },
+                (("★".repeat(Math.round(p.stars))) + "☆☆☆☆").slice(0, 5)
+              ),
+              p.restaurant ? React.createElement("span", { className: "sep" }, "·") : null,
+              p.restaurant ? React.createElement("span", { className: "rest" }, p.restaurant) : null,
+              React.createElement("span", { className: "sep" }, "·"),
+              React.createElement(
+                "span",
+                { className: "counts" },
+                "❤ ",
+                p.likeCount,
+                " · 💬 ",
+                p.commentCount
+              )
+            ),
+            React.createElement("p", { className: "fy-caption" }, p.caption),
+
+            React.createElement(
+              "div",
+              { className: "fy-meta" },
+              React.createElement("img", {
+                src: p.author.photoURL || "https://ui-avatars.com/api/?name=U",
+                className: "fy-avatar",
+                alt: "",
+              }),
+              React.createElement(
+                "span",
+                { className: "fy-handle" },
+                "@",
+                p.author.displayName || "user"
+              )
+              ),
+              React.createElement(
+                "button",
+                {
+                  type: "button",
+                  className: "fy-volbtn",
+                  onClick: (e) => { e.stopPropagation(); toggleSound(p.id); },
+                  title: soundOnPostId === p.id ? "Mute" : "Unmute",
+                },
+                soundOnPostId === p.id ? "🔊" : "🔇"
+              )
         )
       ),
-      buttonBar(p)
+      buttonBar(p),
+
+      (openCommentsPostId === p.id)
+        ? React.createElement(CommentPanel, {
+            postId: p.id,
+            onClose: () => setOpenCommentsPostId(null),
+          })
+      : null
 
       )
 
