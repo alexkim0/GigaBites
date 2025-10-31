@@ -5,6 +5,7 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import DivButton from "../../components/DivButton";
 import {collection,onSnapshot,orderBy,query,where,doc,getDoc,} from "firebase/firestore";
+import LikeButton from "../../components/LikeButton/LikeButton"
 import "./Feedpage.css";
 
 export const Feed = () => {
@@ -97,7 +98,7 @@ export const Feed = () => {
             const usnap = await getDoc(uref);
             author = usnap.exists()
               ? {
-                  displayName: usnap.data().displayName || "",
+                  displayName: usnap.data().user_name || "",
                   photoURL: usnap.data().photoURL || "",
                 }
               : {
@@ -201,7 +202,7 @@ export const Feed = () => {
       DivButton,
       { className: "ghost2", onClick: logout },
       "Logout"
-    )
+    ),
   );
 
   const userbar = React.createElement(
@@ -211,10 +212,34 @@ export const Feed = () => {
     React.createElement("strong", null, auth?.currentUser?.email || "user")
   );
 
+  const buttonBar = (p) => {
+    return React.createElement(
+      "div",
+      { className: "fy-buttonbar" },
+      React.createElement(LikeButton, {
+        postId: p.id,
+        initialCount: p.likeCount,
+      }),
+      React.createElement(
+        "button",
+        { className: "comment-btn", onClick: () => console.log("comments", p.id) },
+        "💬"
+      ),
+      React.createElement(
+        "button",
+        { className: "share-btn", onClick: () => console.log("share", p.id) },
+        "↗️"
+      )
+    );
+  };
+
   const cards = posts.map((p, i) =>
     React.createElement(
       "section",
       { key: p.id, "data-index": i, "data-id": p.id, className: "fy-card" },
+      React.createElement(
+        "div",
+        { className: "fy-post-wrap"},
       React.createElement(
         "div",
         { className: "fy-frame" },                    // NEW fixed-size frame
@@ -264,6 +289,7 @@ export const Feed = () => {
              )
            ),
            React.createElement("p", { className: "fy-caption" }, p.caption),
+
            React.createElement(
              "div",
              { className: "fy-meta" },
@@ -290,7 +316,11 @@ export const Feed = () => {
               soundOnPostId === p.id ? "🔊" : "🔇"
             )
         )
+      ),
+      buttonBar(p)
+
       )
+
      )
    );
 

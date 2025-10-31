@@ -246,3 +246,28 @@
 .fy-volbtn:hover { transform: translateY(-1px); background: rgba(0,0,0,0.55); }
 .fy-volbtn:active { transform: translateY(0); }
 .fy-volbtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* The vertical stack of buttons */
+.fy-buttonbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Button visuals */
+.fy-buttonbar button {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+/* The outer wrapper: horizontal layout */
+.fy-post-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* space between post and button bar */
+}
