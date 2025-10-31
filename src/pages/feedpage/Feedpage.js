@@ -17,8 +17,8 @@ export const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
-const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
-const toggleComments = (postId) => setOpenCommentsPostId((cur) => (cur === postId ? null : postId));
+  const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
+  const toggleComments = (postId) => setOpenCommentsPostId((cur) => (cur === postId ? null : postId));
 
   const containerRef = useRef(null);
   const authorCacheRef = useRef(new Map());

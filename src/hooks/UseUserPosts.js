@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import {
     collection, query, where,
     orderBy, limit, getDocs, startAfter,
@@ -10,6 +10,8 @@ export function UseUserPosts(profileId, pageSize = 18) {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [cursor, setCursor] = useState(null); // last doc snapshot
+
+    const loadedForIdRef = useRef(null);
 
     // Build the base query only when inputs(profileId, pageSize) change
     const baseQuery = useMemo(() => {
@@ -48,7 +50,11 @@ export function UseUserPosts(profileId, pageSize = 18) {
                 ...d.data(), // fields like post_caption, post_media, post_type, etc.
             }));
 
-            setPosts((prev) => [...prev, ...newPosts]);
+            setPosts(prev => {
+                const prevIds = new Set(prev.map(p => p.id));
+                const uniqueNew = newPosts.filter(n => !prevIds.has(n.id));
+                return [...prev, ...uniqueNew];
+            });
 
             // If fewer than requested came back, we're at the end
             if (snap.docs.length < pageSize) setHasMore(false);
@@ -65,14 +71,18 @@ export function UseUserPosts(profileId, pageSize = 18) {
         setPosts([]);
         setCursor(null);
         setHasMore(true);
+        loadedForIdRef.current = null;
     }, [profileId]);
 
 
-    // Auto-load first page when profileId becomes available
+    // first load: ensure it fires only once per profileId (guards StrictMode double-call)
     useEffect(() => {
-        if (profileId) load();
+        if (!profileId || !baseQuery) return;
+        if (loadedForIdRef.current === profileId) return; // already kicked off
+        loadedForIdRef.current = profileId;
+        load();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [profileId]);
+    }, [profileId, baseQuery]);
 
     console.log(posts)
     return { posts, loading, hasMore, loadMore: load };

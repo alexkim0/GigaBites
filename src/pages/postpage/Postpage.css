@@ -1,0 +1,133 @@
+/* Wrapper */
+.interests-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Header */
+.interests-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.interests-header p {
+  margin: 0 0 14px;
+  color: #6b6b6b;
+}
+
+.signed-in-as {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 14px;
+}
+
+/* Grid of pills */
+.interests-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 8px 0 20px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1.5px solid #e6e6e6;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform .08s ease, background .2s ease, border-color .2s ease;
+}
+
+.pill:hover { transform: translateY(-1px); }
+.pill:active { transform: translateY(0); }
+
+.pill.selected {
+  background: #ff4655;
+  border-color: #ff4655;
+  color: #fff;
+}
+
+.check {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid #e6e6e6;
+  background: #fff;
+  color: transparent;
+  font-weight: 900;
+}
+.check.show { color: #ff4655; border-color: #fff; background: #fff; }
+
+.label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Bottom actions */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+
+.primary {
+  background: #ff4655;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.ghost {
+  background: #f3f3f3;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.interests-wrap, .interests-wrap * {
+  box-sizing: border-box;
+}
+
+/* Bigger, full-width logout button */
+.logout-row { 
+  margin-top: 24px; 
+}
+
+.logout-row .logout.big {
+  width: 100%;
+  display: inline-flex;           /* center text */
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0;
+  padding: 16px 20px;             /* taller */
+  font-size: 18px;                /* bigger text */
+  font-weight: 800;
+  border-radius: 14px;
+
+  background: #111;               
+  color: #fff;
+  border: none;
+  text-decoration: none;          
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+  transition: transform .06s ease, filter .15s ease;
+}
+
+.fy-header {
+  display: flex;
+  justify-content: space-between; /* spreads left and right content */
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+.fy-actions {
+  margin-left: auto; /* pushes actions all the way to the right */
+}
