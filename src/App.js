@@ -62,12 +62,6 @@
             {currentUser && <Sidebar />}
             
             <div className="app">
-              <header className="logo-header">
-                <Link to ="/feed">
-                  <img src={logo} className="logo" alt="logo" />
-                </Link>
-              </header>
-
               <Routes>
                 <Route
                   path="/"
