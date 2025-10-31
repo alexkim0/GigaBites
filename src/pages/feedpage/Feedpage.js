@@ -29,8 +29,10 @@ export const Feed = () => {
   };
   const profilePage = () => navigate(`/profilepage/${uid}`);
   const createPage = () => navigate("/createpage");
+  const [soundOnPostId, setSoundOnPostId] = useState(null); // which post is unmuted
 
 
+//Fetch public posts with real-time updates 
   useEffect(() => {
     const base = collection(db, "post");
     const q1 = query(
@@ -74,7 +76,7 @@ export const Feed = () => {
     };
   }, [db]);
 
-  // Normalize post shape and fetch author profiles from "user" (singular)
+  // Normalize post shape and fetch author profiles from "user" (singular) / UI Avatars
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -212,7 +214,7 @@ export const Feed = () => {
   const cards = posts.map((p, i) =>
     React.createElement(
       "section",
-      { key: p.id, "data-index": i, className: "fy-card" },
+      { key: p.id, "data-index": i, "data-id": p.id, className: "fy-card" },
       React.createElement(
         "div",
         { className: "fy-frame" },                    // NEW fixed-size frame
@@ -224,7 +226,7 @@ export const Feed = () => {
                 src: p.mediaURL,
                 className: "fy-media",
                 loop: true,
-                muted: true,
+                muted: soundOnPostId !== p.id,   // unmute only the post we toggled
                 playsInline: true,
                 onClick: (e) => {
                   const v = e.currentTarget;
@@ -276,7 +278,17 @@ export const Feed = () => {
                "@",
                p.author.displayName || "user"
              )
-           )
+            ),
+            React.createElement(
+              "button",
+              {
+                type: "button",
+                className: "fy-volbtn",
+                onClick: (e) => { e.stopPropagation(); toggleSound(p.id); },
+                title: soundOnPostId === p.id ? "Mute" : "Unmute",
+              },
+              soundOnPostId === p.id ? "🔊" : "🔇"
+            )
         )
       )
      )
@@ -293,6 +305,22 @@ export const Feed = () => {
     ...cards,
     emptyView
   );
+
+  const toggleSound = (postId) => {
+    const container = containerRef.current;
+    const video = container?.querySelector(`section[data-index][data-id='${postId}'] video`);
+    if (!video) return;
+    const willUnmute = soundOnPostId !== postId;
+    try {
+      // iOS/Safari requires play() in the same user gesture that unmutes
+      video.muted = !willUnmute;
+      if (willUnmute) video.play().catch(() => {});
+      setSoundOnPostId(willUnmute ? postId : null);
+    } catch (e) {
+      console.error("toggleSound failed", e);
+    }
+  };
+
 
   return React.createElement("div", { className: "fy-root" }, header, dock, main);
 };
