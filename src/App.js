@@ -17,6 +17,7 @@
   import { ProfileCreation } from "./pages/profileCreation/ProfileCreation";
   import { Profilepage } from "./pages/profilepage/Profilepage";
   import { Createpage } from "./pages/createpage/Createpage"
+  import { Postpage } from "./pages/postpage/Postpage";
 
   function App() {
     // const [testList, setTestList] = useState([]);
@@ -113,6 +114,14 @@
                   <Createpage/>
                 </ProtectedRoute>
               }
+            />
+            <Route 
+              path="/postpage/:postId" 
+              element={
+                <ProtectedRoute>
+                  <Postpage/>
+                </ProtectedRoute>
+              } 
             />
 
             <Route path="*" element={<Navigate to="/" />} />

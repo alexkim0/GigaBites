@@ -71,7 +71,7 @@ export const Profilepage = () => {
                         <button
                             key={p.id}
                             className="profile-tile"
-                            // onClick={() => navigate(`/post/${p.id}`)} // doing it later..
+                            onClick={() => navigate(`/postpage/${p.id}`)} // doing it later..
                         >
                             {IsImage && (
                                 <img
