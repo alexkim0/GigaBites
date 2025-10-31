@@ -101,7 +101,6 @@ export const Profilepage = () => {
                 })}
             </div>
             
-            {/*
             <div className="loadmore">
                 {hasMore ? (
                     <button className="btn" onClick={loadMore} disabled={loading}>
@@ -111,7 +110,6 @@ export const Profilepage = () => {
                     <span>No more posts</span>
                 )}
             </div>
-            */}
 
             <div className="profileLogOutBox"> 
                 <DivButton className="profileLogOut" onClick={logout}>
