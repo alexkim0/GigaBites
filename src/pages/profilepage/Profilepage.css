@@ -46,3 +46,49 @@
   box-shadow: 0 6px 14px rgba(0,0,0,.12);
   transition: transform .06s ease, filter .15s ease;
 }
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  background-color: #ccc;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+@media (min-width: 640px) {  /* sm */
+  .profile-grid { gap: 8px; }
+}
+@media (min-width: 768px) {  /* md */
+  .profile-grid { gap: 12px; }
+}
+
+/* A square tile with rounded corners and overflow hidden */
+.profile-tile {
+    position: relative;
+    aspect-ratio: 1 / 1;   /* keeps tiles square */
+    overflow: hidden;
+    border: none;
+    border-radius: 8px;     /* rounded-md */
+    border-color: rgb(201, 201, 201);
+    box-shadow: none;
+    background: #f3f4f6;    /* light gray while media loads */
+    cursor: pointer;
+}
+
+/* ===== Media inside tiles ===== */
+.tile-media,
+.tile-media-img,
+.tile-media-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* like object-cover */
+    display: block;
+}
+
+
+.tile-media-img {
+  transition: transform 200ms ease; /* hover scale effect */
+}
+
+

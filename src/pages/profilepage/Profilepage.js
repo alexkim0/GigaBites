@@ -29,6 +29,12 @@ export const Profilepage = () => {
         return <p>You must be logged in to view your profile.</p>;
     }
 
+    const handleVideoHover = (e, play) => {
+        const v = e.currentTarget;
+        if (play) v.play();
+        else v.pause();
+    };
+
     const logout = async () => {
         try {
             await signOut(auth);
@@ -54,6 +60,57 @@ export const Profilepage = () => {
             <p className="pUsernameField">{username}</p>
             <p className="pFollowsField">Following: {following}    |    Follower: {follower}</p>
             <p className="pVideos"> VIDEOS WILL GO HERE </p>
+            <div className="profile-grid">
+                {posts.map((p) => {
+                    const m = p.post_media?.[0];
+                    if (!m) return null;
+                    const IsImage = m.mimeType?.startsWith("image/");
+                    const IsVideo = m.mimeType?.startsWith("video/");
+
+                    return (
+                        <button
+                            key={p.id}
+                            className="profile-tile"
+                            // onClick={() => navigate(`/post/${p.id}`)} // doing it later..
+                        >
+                            {IsImage && (
+                                <img
+                                    src={m.downloadURL}
+                                    alt={p.post_caption || ""}
+                                    className="tile-media tile-media-img"
+                                    loading="lazy"
+                                />
+                            )}
+
+                            {IsVideo && (
+                                <>
+                                    <video
+                                        src={m.downloadURL}
+                                        className="tile-media tile-media-video"
+                                        muted
+                                        loop
+                                        playsInline
+                                        preload="metadata"
+                                        onMouseOver={(e) => handleVideoHover(e, true)}
+                                        onMouseOut={(e) => handleVideoHover(e, false)}
+                                    />
+                                    <span className="title-badge">▶</span>
+                                </>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+
+            <div className="loadmore">
+                {hasMore ? (
+                    <button className="btn" onClick={loadMore} disabled={loading}>
+                        {loading ? "Loading..." : "Load more"}
+                    </button>
+                ) : (
+                    <span>No more posts</span>
+                )}
+            </div>
             <div className="profileLogOutBox"> 
                 <DivButton className="profileLogOut" onClick={logout}>
                 Logout
