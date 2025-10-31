@@ -59,7 +59,6 @@ export const Profilepage = () => {
             <img className="pUserIcon" src={userIcon} alt=""/>
             <p className="pUsernameField">{username}</p>
             <p className="pFollowsField">Following: {following}    |    Follower: {follower}</p>
-            <p className="pVideos"> VIDEOS WILL GO HERE </p>
             <div className="profile-grid">
                 {posts.map((p) => {
                     const m = p.post_media?.[0];
@@ -101,7 +100,8 @@ export const Profilepage = () => {
                     );
                 })}
             </div>
-
+            
+            {/*
             <div className="loadmore">
                 {hasMore ? (
                     <button className="btn" onClick={loadMore} disabled={loading}>
@@ -111,15 +111,20 @@ export const Profilepage = () => {
                     <span>No more posts</span>
                 )}
             </div>
+            */}
+
             <div className="profileLogOutBox"> 
                 <DivButton className="profileLogOut" onClick={logout}>
                 Logout
             </DivButton>
             </div>
+            
+            {/*
             <div>
                 <h2>Profile of {uid}</h2>
                 <p>Total posts: {posts.length}</p>
             </div>
+            */}
         </div>
     )
 

@@ -363,7 +363,7 @@ export const Feed = () => {
   };
 
 
-  return React.createElement("div", { className: "fy-root" }, header, dock, main);
+  return React.createElement("div", { className: "fy-root" }, main);
 };
 
 export default Feed;

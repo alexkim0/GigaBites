@@ -1,5 +1,5 @@
   // import { useEffect, useState } from "react";
-  import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
+  import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation  } from "react-router-dom";
   import { Toaster } from "react-hot-toast";
   // import logo from './logo.svg';
   import './App.css';
@@ -8,7 +8,7 @@
   import { useAuth } from "./hooks/AuthProvider";
   import ProtectedRoute from "./components/ProtectedRoute";
   import logo from './assets/logo.png';
-
+  import Sidebar from "./components/Sidebar/Sidebar";
 
   import { SignUp } from "./pages/signUp/SignUp";
   import { Login } from "./pages/login/LogIn"
@@ -49,22 +49,30 @@
 
     // const [showTests, setShowTests] = useState(false);
 
-    const { currentUser, loading } = useAuth();
+      const { currentUser, loading } = useAuth();
 
-    if (loading) {
-      return <p>Loading...</p>;
-    }
+      if (loading) {
+        return <p>Loading...</p>;
+      }
 
-    return (
+      return (
       <Router>
-        <Toaster position="top-right"/>
-        <div className="app">
-          <header className="logo-header">
-            <Link to ="/feed">
-              <img src={logo} className="logo" alt="logo" />
-            </Link>
-          </header>
+        <Toaster position="top-right" />
+        <AppContent currentUser={currentUser} />
+      </Router>
+    );
+  }
 
+function AppContent({ currentUser }) {
+  const location = useLocation();
+
+  const noSidebarPaths = ["/homepage", "/profileCreation"];
+  const showSidebar = currentUser && !noSidebarPaths.includes(location.pathname);
+    return (
+      <div className="app-container">
+        {showSidebar && <Sidebar />}
+
+        <div className="app">
           <Routes>
             <Route
               path="/"
@@ -127,7 +135,7 @@
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
-      </Router>
+      </div>
     );
   }
 

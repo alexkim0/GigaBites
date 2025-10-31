@@ -169,7 +169,7 @@ export function Postpage() {
       <header className="fy-header">
         <div className="fy-actions">
           <DivButton className="ghost2" onClick={() => navigate(`/profilepage/${auth.currentUser?.uid || ""}`)}>
-            View Profile
+            X
           </DivButton>
         </div>
       </header>
