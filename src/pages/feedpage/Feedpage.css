@@ -238,6 +238,18 @@
   gap: 14px;
 }
 
+/* shows hand cursor when clicking profile name*/
+.fy-handle {
+  cursor: pointer;                
+  transition: color 0.2s; 
+}
+
+/* underline on hover */
+.fy-handle:hover {
+  text-decoration: underline;            
+}
+
+
 /* Button visuals */
 .fy-buttonbar button {
   border: none;

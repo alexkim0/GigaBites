@@ -120,6 +120,7 @@ export const Feed = () => {
 
         next.push({
           id: p.id,
+          authorId: p.post_authorId,
           caption: p.post_caption || "",
           stars: Number(p.post_stars || 0),
           likeCount: Number(p.post_likeCount || 0),
@@ -237,6 +238,10 @@ export const Feed = () => {
     );
   };
 
+  const handleClick = (authorId) => {
+    navigate(`/profilepage/${authorId}`)
+  };
+
   const cards = posts.map((p, i) =>
     React.createElement(
       "section",
@@ -304,7 +309,13 @@ export const Feed = () => {
               }),
               React.createElement(
                 "span",
-                { className: "fy-handle" },
+                { 
+                  className: "fy-handle",
+                  role: "button",
+                  tabIndex: 0,
+                  title: "View Profile",
+                  onClick: (e) => {e.stopPropagation(); handleClick(p.authorId); },
+                },
                 "@",
                 p.author.displayName || "user"
               )
