@@ -1,4 +1,3 @@
-// src/pages/postpage/PostPage.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../../config/firebase-config";
