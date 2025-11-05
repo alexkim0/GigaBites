@@ -167,7 +167,7 @@ export function Postpage() {
     <div className="fy-root">
       <header className="fy-header">
         <div className="fy-actions">
-          <DivButton className="ghost2" onClick={() => navigate(`/profilepage/${auth.currentUser?.uid || ""}`)}>
+          <DivButton className="ghost2" onClick={() => navigate(`/profilepage/${post.authorId || ""}`)}>
             X
           </DivButton>
         </div>
