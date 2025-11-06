@@ -73,7 +73,7 @@ export function watchComments(postId, cb) {
         id: d.id,
         text: data.text,
         uid: data.uid,
-        username, // ✅ attach username
+        username, // attach username
         createdAt: data.createdAt,
       });
     }
