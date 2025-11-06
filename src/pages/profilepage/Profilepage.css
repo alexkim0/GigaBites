@@ -100,3 +100,7 @@
   justify-content: center;
 }
 
+.pFollowsField.clickable { cursor: pointer; }
+
+.pFollowsField.clickable:hover { text-decoration: underline; }
+

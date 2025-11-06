@@ -11,6 +11,8 @@ import "./Profilepage.css";
 import DivButton from "../../components/DivButton";
 import userIcon from "../../assets/defaultIcon.png";
 import FollowButton from "../../components/FollowButton/FollowButton";
+import Modal from "../../components/Modal/Modal";
+import FollowListPanel from "../../components/FollowListPanel/FollowListPanel";
 
 
 
@@ -27,6 +29,7 @@ export const Profilepage = () => {
     const [profile, setProfile] = useState(null);
     const [profileLoading, setProfileLoading] = useState(true);
     const [followerCount, setFollowerCount] = useState(0);
+    const [followModal, setFollowModal] = useState(null); 
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -95,8 +98,20 @@ export const Profilepage = () => {
             <p className="pUsernameField">{username}</p>
             <div className="pInfoContainer">
                 <p className="pFollowsField">Posts: {posts.length}</p>
-                <p className="pFollowsField">Follower: {followerCount}</p>
-                <p className="pFollowsField">Following: {following}</p>
+                <p 
+                    className="pFollowsField clickable"
+                    onClick={() => setFollowModal("followers")}
+                    title="View followers"
+                >
+                    Follower: {followerCount}
+                </p>
+                <p 
+                    className="pFollowsField clickable"
+                    onClick={() => setFollowModal("following")}
+                    title="View following"
+                >
+                    Following: {following}
+                </p>
             </div>
 
             {!isOwnProfile && (
@@ -175,7 +190,11 @@ export const Profilepage = () => {
                 <p>Total posts: {posts.length}</p>
             </div>
             */}
+        <Modal open={!!followModal} onClose={() => setFollowModal(null)}>
+            <FollowListPanel mode={followModal || "followers"} userId={uid} />
+        </Modal>
         </div>
+
     )
 
 
