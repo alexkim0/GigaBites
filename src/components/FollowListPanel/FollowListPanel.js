@@ -1,11 +1,16 @@
 // src/components/FollowListPanel.jsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { watchFollowers, watchFollowing } from "../../lib/Follows";
+
+import DivButton from "../../components/DivButton";
+import FollowButton from "../../components/FollowButton/FollowButton";
 import "./FollowListPanel.css";
 
 export default function FollowListPanel({ mode, userId }) {
   // mode: 'followers' | 'following'
   const [items, setItems] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userId || (mode !== "followers" && mode !== "following")) return;
@@ -29,8 +34,16 @@ export default function FollowListPanel({ mode, userId }) {
               alt=""
             />
             <div className="flp-meta">
-              <div className="flp-name">@{it.profile.user_name || "user"}</div>
-              {/* Can add a "Follow"/"Following" button here too if desired */}
+              <DivButton className="navGhost" onClick={() => navigate(`/profilepage/${it.uid}`)}>  
+                <div className="flp-name">@{it.profile.user_name || "user"}</div>
+                {/* Can add a "Follow"/"Following" button here too if desired */}
+              </DivButton>
+            </div>
+            <div className = "flp-follows">
+              <FollowButton
+                  targetUid={it.uid}
+                  initialFollowerCount={it.user_follower ?? 0}
+              />
             </div>
           </div>
         ))}
