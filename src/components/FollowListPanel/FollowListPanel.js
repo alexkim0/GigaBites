@@ -28,16 +28,18 @@ export default function FollowListPanel({ mode, userId }) {
         {items.length === 0 && <div className="flp-empty">No {mode} yet.</div>}
         {items.map((it) => (
           <div key={it.uid} className="flp-row">
-            <img
-              className="flp-avatar"
-              src={it.profile.photoURL || "https://ui-avatars.com/api/?name=U"}
-              alt=""
-            />
-            <div className="flp-meta">
-              <DivButton className="navGhost" onClick={() => navigate(`/profilepage/${it.uid}`)}>  
-                <div className="flp-name">@{it.profile.user_name || "user"}</div>
-                {/* Can add a "Follow"/"Following" button here too if desired */}
-              </DivButton>
+            <div className="flp-info">
+              <img
+                className="flp-avatar"
+                src={it.profile.photoURL || "https://ui-avatars.com/api/?name=U"}
+                alt=""
+              />
+              <div className="flp-meta">
+                <DivButton className="navGhost" onClick={() => navigate(`/profilepage/${it.uid}`)}>  
+                  <div className="flp-name">@{it.profile.user_name || "user"}</div>
+                  {/* Can add a "Follow"/"Following" button here too if desired */}
+                </DivButton>
+              </div>
             </div>
             <div className = "flp-follows">
               <FollowButton
