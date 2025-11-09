@@ -191,7 +191,10 @@ export const Profilepage = () => {
             </div>
             */}
         <Modal open={!!followModal} onClose={() => setFollowModal(null)}>
-            <FollowListPanel mode={followModal || "followers"} userId={uid} />
+            <FollowListPanel 
+                mode={followModal || "followers"}
+                userId={uid}
+                onCloseModal={() => setFollowModal(null)} />
         </Modal>
         </div>
 

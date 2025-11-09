@@ -1,5 +1,5 @@
   // import { useEffect, useState } from "react";
-  import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation  } from "react-router-dom";
+  import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, useParams  } from "react-router-dom";
   import { Toaster } from "react-hot-toast";
   // import logo from './logo.svg';
   import './App.css';
@@ -18,6 +18,11 @@
   import { Profilepage } from "./pages/profilepage/Profilepage";
   import { Createpage } from "./pages/createpage/Createpage"
   import { Postpage } from "./pages/postpage/Postpage";
+
+  function ProfilepageWithKey() {
+      const { uid } = useParams();
+      return <Profilepage key={uid} />;
+  }
 
   function App() {
     // const [testList, setTestList] = useState([]);
@@ -111,7 +116,7 @@ function AppContent({ currentUser }) {
               path="/profilepage/:uid"
               element={
                 <ProtectedRoute>
-                  <Profilepage />
+                  <ProfilepageWithKey />
                 </ProtectedRoute>
               }
             />

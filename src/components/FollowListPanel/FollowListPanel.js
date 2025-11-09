@@ -7,7 +7,7 @@ import DivButton from "../../components/DivButton";
 import FollowButton from "../../components/FollowButton/FollowButton";
 import "./FollowListPanel.css";
 
-export default function FollowListPanel({ mode, userId }) {
+export default function FollowListPanel({ mode, userId, onCloseModal }) {
   // mode: 'followers' | 'following'
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
@@ -35,7 +35,14 @@ export default function FollowListPanel({ mode, userId }) {
                 alt=""
               />
               <div className="flp-meta">
-                <DivButton className="navGhost" onClick={() => navigate(`/profilepage/${it.uid}`)}>  
+                <DivButton 
+                  className="navGhost" 
+                  onClick={() => {
+                    if (onCloseModal) onCloseModal();
+                    navigate(`/profilepage/${it.uid}`);
+                    window.scrollTo(0, 0);
+                  }}
+                >  
                   <div className="flp-name">@{it.profile.user_name || "user"}</div>
                   {/* Can add a "Follow"/"Following" button here too if desired */}
                 </DivButton>
