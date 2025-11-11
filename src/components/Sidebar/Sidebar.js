@@ -41,7 +41,7 @@ function Sidebar() {
       <ul>
 
         <li onClick={() => navigate("/feed")}>
-          <a href="">
+          <a href="#">
             <i className="bx bx-fork"></i>
             <span className="nav-item">Feed</span>
           </a>
@@ -49,7 +49,7 @@ function Sidebar() {
         </li>
 
         <li onClick={() => navigate("/createpage")}>
-          <a href="">
+          <a href="#">
             <i className="bx bx-plus-circle"></i>
             <span className="nav-item">Create</span>
           </a>
@@ -57,7 +57,7 @@ function Sidebar() {
         </li>
 
         <li onClick={() => navigate(`/profilepage/${uid}`)}>
-          <a href="">
+          <a href="#">
             <i className="bx bx-user-circle"></i>
             <span className="nav-item">Profile</span>
           </a>

@@ -17,7 +17,6 @@
 .pFollowsField {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     text-align: center;
-    display: inline;
 }
 
 .profileLogOutBox { 
@@ -93,14 +92,4 @@
   transition: transform 200ms ease; /* hover scale effect */
 }
 
-.pInfoContainer {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  justify-content: center;
-}
-
-.pFollowsField.clickable { cursor: pointer; }
-
-.pFollowsField.clickable:hover { text-decoration: underline; }
 

@@ -5,15 +5,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { db } from '../../config/firebase-config';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { UseUserPosts } from "../../hooks/UseUserPosts"
-import { watchFollowerCount } from "../../lib/Follows";
 
 import "./Profilepage.css";
 import DivButton from "../../components/DivButton";
 import userIcon from "../../assets/defaultIcon.png";
-import FollowButton from "../../components/FollowButton/FollowButton";
-import Modal from "../../components/Modal/Modal";
-import FollowListPanel from "../../components/FollowListPanel/FollowListPanel";
-
 
 
 export const Profilepage = () => {
@@ -21,15 +16,13 @@ export const Profilepage = () => {
     const navigate = useNavigate();
     const { uid } = useParams();
     const { posts, loadingPost, hasMore, loadMore } = UseUserPosts(uid, 18);
-    const isOwnProfile = user?.uid === uid;
 
 
 
     // whose profile are we viewing (from the URL uid)
     const [profile, setProfile] = useState(null);
     const [profileLoading, setProfileLoading] = useState(true);
-    const [followerCount, setFollowerCount] = useState(0);
-    const [followModal, setFollowModal] = useState(null); 
+
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -57,13 +50,6 @@ export const Profilepage = () => {
     })();
     return () => { cancelled = true; };
   }, [uid, db]);
-
-    // Realtime follower count (updates instantly when FollowButton updates Firestore)
-    useEffect(() => {
-        if (!uid) return;
-        const unsub = watchFollowerCount(uid, setFollowerCount);
-        return () => unsub && unsub();
-    }, [uid]);
 
 
     const handleVideoHover = (e, play) => {
@@ -96,34 +82,7 @@ export const Profilepage = () => {
         <div className="profile-page-wrap">
             <img className="pUserIcon" src={photoURL} alt=""/>
             <p className="pUsernameField">{username}</p>
-            <div className="pInfoContainer">
-                <p className="pFollowsField">Posts: {posts.length}</p>
-                <p 
-                    className="pFollowsField clickable"
-                    onClick={() => setFollowModal("followers")}
-                    title="View followers"
-                >
-                    Follower: {followerCount}
-                </p>
-                <p 
-                    className="pFollowsField clickable"
-                    onClick={() => setFollowModal("following")}
-                    title="View following"
-                >
-                    Following: {following}
-                </p>
-            </div>
-
-            {!isOwnProfile && (
-                <div className="profile-button-container">
-                    <div className="profileLogOutBox">
-                        <FollowButton
-                            targetUid={uid}
-                            initialFollowerCount={profile.user_follower ?? 0}
-                        />
-                    </div>
-                </div>
-            )}
+            <p className="pFollowsField">Following: {following}    |    Follower: {follower}</p>
             <div className="profile-grid">
                 {posts.map((p) => {
                     const m = p.post_media?.[0];
@@ -190,14 +149,7 @@ export const Profilepage = () => {
                 <p>Total posts: {posts.length}</p>
             </div>
             */}
-        <Modal open={!!followModal} onClose={() => setFollowModal(null)}>
-            <FollowListPanel 
-                mode={followModal || "followers"}
-                userId={uid}
-                onCloseModal={() => setFollowModal(null)} />
-        </Modal>
         </div>
-
     )
 
 

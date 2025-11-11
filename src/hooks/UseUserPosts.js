@@ -61,12 +61,7 @@ export function UseUserPosts(profileId, pageSize = 18) {
 
             // Save the last doc as the next page cursor (or null if none)
             setCursor(snap.docs[snap.docs.length - 1] || null);
-        } catch (err) {
-            console.error("[UseUserPosts] load failed:", err);
-            // If you see FAILED_PRECONDITION here, create a composite index for:
-            // post_authorId (==), post_date (desc)
-            setHasMore(false);
-        }   finally {
+        } finally {
             setLoading(false);
         }
     };
@@ -77,7 +72,6 @@ export function UseUserPosts(profileId, pageSize = 18) {
         setCursor(null);
         setHasMore(true);
         loadedForIdRef.current = null;
-        console.log("id changed")
     }, [profileId]);
 
 
@@ -90,6 +84,7 @@ export function UseUserPosts(profileId, pageSize = 18) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [profileId, baseQuery]);
 
+    console.log(posts)
     return { posts, loading, hasMore, loadMore: load };
 
 }

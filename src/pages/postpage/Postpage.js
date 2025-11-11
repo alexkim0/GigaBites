@@ -1,3 +1,4 @@
+// src/pages/postpage/PostPage.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../../config/firebase-config";
@@ -167,7 +168,7 @@ export function Postpage() {
     <div className="fy-root">
       <header className="fy-header">
         <div className="fy-actions">
-          <DivButton className="ghost2" onClick={() => navigate(`/profilepage/${post.authorId || ""}`)}>
+          <DivButton className="ghost2" onClick={() => navigate(`/profilepage/${auth.currentUser?.uid || ""}`)}>
             X
           </DivButton>
         </div>
