@@ -1,4 +1,3 @@
-// src/components/LikeButton.jsx
 import React, { useEffect, useState } from "react";
 import { auth } from "../../config/firebase-config";
 import { toggleLike, watchIsLiked, watchLikeCount } from "../../lib/Likes"; // adjust path if needed
