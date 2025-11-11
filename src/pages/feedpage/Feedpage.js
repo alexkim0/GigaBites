@@ -1,11 +1,10 @@
-// src/pages/feedpage/Feedpage.js
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { auth, db } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import DivButton from "../../components/DivButton";
 import {collection,onSnapshot,orderBy,query,where,doc,getDoc,} from "firebase/firestore";
-import LikeButton from "../../components/LikeButton/LikeButton"
+import LikeButton from "../../components/LikeButton/LikeButton";
 import CommentPanel from "../../components/CommentPanel/CommentPanel";
 import "./Feedpage.css";
 
@@ -18,26 +17,31 @@ export const Feed = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
-  const toggleComments = (postId) => setOpenCommentsPostId((cur) => (cur === postId ? null : postId));
+  const toggleComments = useCallback(
+    (postId) =>
+      setOpenCommentsPostId((cur) => (cur === postId ? null : postId)),
+    []
+  );
 
   const containerRef = useRef(null);
   const authorCacheRef = useRef(new Map());
   const fallbackUnsubRef = useRef(null);
 
-  const logout = async () => {
+  const [soundOnPostId, setSoundOnPostId] = useState(null); // which post is unmuted
+
+  const logout = useCallback(async () => {
     try {
       await signOut(auth);
       navigate("/login");
     } catch (err) {
       console.error(err);
     }
-  };
-  const profilePage = () => navigate(`/profilepage/${uid}`);
-  const createPage = () => navigate("/createpage");
-  const [soundOnPostId, setSoundOnPostId] = useState(null); // which post is unmuted
+  }, [navigate]);
 
+  const profilePage = useCallback(() => navigate(`/profilepage/${uid}`), [navigate, uid]);
+  const createPage = useCallback(() => navigate("/createpage"), [navigate]);
 
-//Fetch public posts with real-time updates 
+  // Fetch public posts with real-time updates
   useEffect(() => {
     const base = collection(db, "post");
     const q1 = query(
@@ -79,9 +83,9 @@ export const Feed = () => {
         fallbackUnsubRef.current = null;
       }
     };
-  }, [db]);
+  }, []);
 
-  // Normalize post shape and fetch author profiles from "user" (singular) / UI Avatars
+  // Normalize post shape and fetch author profiles from "user" (singular)
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -98,7 +102,7 @@ export const Feed = () => {
         let author = authorCacheRef.current.get(p.post_authorId);
         if (!author) {
           try {
-            const uref = doc(db, "user", p.post_authorId); // singular "user" per your console
+            const uref = doc(db, "user", p.post_authorId); // singular "user"
             const usnap = await getDoc(uref);
             author = usnap.exists()
               ? {
@@ -134,10 +138,11 @@ export const Feed = () => {
       }
       if (!cancelled) setPosts(next);
     })();
+
     return () => {
       cancelled = true;
     };
-  }, [rawPosts, db]);
+  }, [rawPosts]);
 
   // Determine which card is centered
   useEffect(() => {
@@ -172,209 +177,160 @@ export const Feed = () => {
         video.play().catch(() => {});
       } else {
         video.pause();
-        video.currentTime = 0;
+        try {
+          video.currentTime = 0;
+        } catch {}
       }
     });
   }, [activeIndex, posts]);
 
   const empty = useMemo(() => posts.length === 0, [posts.length]);
 
-  
-  const header = React.createElement(
-    "header",
-    { className: "fy-header" },
-    React.createElement("div", null),
-    React.createElement(
-      "div",
-      { className: "fy-actions" },
-      React.createElement(
-        DivButton,
-        { className: "ghost2", onClick: createPage },
-        "Create Post"
-      )
-    )
+  const handleClickAuthor = useCallback(
+    (authorId) => navigate(`/profilepage/${authorId}`),
+    [navigate]
   );
 
-  const dock = React.createElement(
-    "aside",
-    { className: "fy-dock" },
-    React.createElement(
-      DivButton,
-      { className: "ghost2", onClick: profilePage },
-      "View Profile"
-    ),
-    React.createElement(
-      DivButton,
-      { className: "ghost2", onClick: logout },
-      "Logout"
-    ),
+  const toggleSound = useCallback(
+    (postId) => {
+      const container = containerRef.current;
+      const video = container?.querySelector(
+        `section[data-id='${postId}'] video`
+      );
+      if (!video) return;
+      const willUnmute = soundOnPostId !== postId;
+      try {
+        // iOS/Safari requires play() in the same user gesture that unmutes
+        video.muted = !willUnmute;
+        if (willUnmute) video.play().catch(() => {});
+        setSoundOnPostId(willUnmute ? postId : null);
+      } catch (e) {
+        console.error("toggleSound failed", e);
+      }
+    },
+    [soundOnPostId]
   );
 
-  const userbar = React.createElement(
-    "div",
-    { className: "fy-userbar" },
-    "Signed in as ",
-    React.createElement("strong", null, auth?.currentUser?.email || "user")
+  return (
+    <div className="fy-root">
+      <main ref={containerRef} className="fy-feed">
+        <div className="fy-userbar">
+          Signed in as <strong>{auth?.currentUser?.email || "user"}</strong>
+        </div>
+
+        {posts.map((p, i) => (
+          <section key={p.id} data-index={i} data-id={p.id} className="fy-card">
+            <div className="fy-post-wrap">
+              <div className="fy-frame">
+                <div className="fy-media-wrap">
+                  {p.type === "video" ? (
+                    <video
+                      src={p.mediaURL}
+                      className="fy-media"
+                      loop
+                      muted={soundOnPostId !== p.id} // unmute only the active toggled post
+                      playsInline
+                      onClick={(e) => {
+                        const v = e.currentTarget;
+                        if (v.paused) v.play();
+                        else v.pause();
+                      }}
+                    />
+                  ) : (
+                    <img src={p.mediaURL} alt={p.caption} className="fy-media" />
+                  )}
+
+                  <div className="fy-overlay">
+                    <div className="fy-chip">
+                      <span className="stars">
+                        {("★".repeat(Math.round(p.stars)) + "☆☆☆☆").slice(0, 5)}
+                      </span>
+                      {p.restaurant ? <span className="sep">·</span> : null}
+                      {p.restaurant ? (
+                        <span className="rest">{p.restaurant}</span>
+                      ) : null}
+                      <span className="sep">·</span>
+                      <span className="counts">
+                        ❤ {p.likeCount} · 💬 {p.commentCount}
+                      </span>
+                    </div>
+
+                    <p className="fy-caption">{p.caption}</p>
+
+                    <div className="fy-meta">
+                      <img
+                        src={
+                          p.author.photoURL ||
+                          "https://ui-avatars.com/api/?name=U"
+                        }
+                        className="fy-avatar"
+                        alt=""
+                      />
+                      <span
+                        className="fy-handle"
+                        role="button"
+                        tabIndex={0}
+                        title="View Profile"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClickAuthor(p.authorId);
+                        }}
+                      >
+                        @{p.author.displayName || "user"}
+                      </span>
+                    </div>
+
+                    {p.type === "video" && (
+                      <button
+                        type="button"
+                        className="fy-volbtn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSound(p.id);
+                        }}
+                        title={soundOnPostId === p.id ? "Mute" : "Unmute"}
+                      >
+                        {soundOnPostId === p.id ? "🔊" : "🔇"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="fy-buttonbar">
+                <LikeButton postId={p.id} initialCount={p.likeCount} />
+                <button
+                  className="comment-btn"
+                  onClick={() => toggleComments(p.id)}
+                  title="Comments"
+                >
+                  💬 {String(p.commentCount ?? 0)}
+                </button>
+                <button
+                  className="share-btn"
+                  onClick={() => console.log("share", p.id)}
+                  title="Share"
+                >
+                  ↗️
+                </button>
+              </div>
+
+              {openCommentsPostId === p.id ? (
+                <CommentPanel
+                  postId={p.id}
+                  onClose={() => setOpenCommentsPostId(null)}
+                />
+              ) : null}
+            </div>
+          </section>
+        ))}
+
+        {!empty ? null : (
+          <div className="fy-empty">No public posts yet — create one!</div>
+        )}
+      </main>
+    </div>
   );
-
-  const buttonBar = (p) => {
-    return React.createElement(
-      "div",
-      { className: "fy-buttonbar" },
-      React.createElement(LikeButton, {
-        postId: p.id,
-        initialCount: p.likeCount,
-      }),
-      React.createElement(
-        "button",
-        { className: "comment-btn", onClick: () => toggleComments(p.id), title: "Comments" },
-        "💬 ", String(p.commentCount ?? 0)
-      ),
-      React.createElement(
-        "button",
-        { className: "share-btn", onClick: () => console.log("share", p.id) },
-        "↗️"
-      )
-    );
-  };
-
-  const handleClick = (authorId) => {
-    navigate(`/profilepage/${authorId}`)
-  };
-
-  const cards = posts.map((p, i) =>
-    React.createElement(
-      "section",
-      { key: p.id, "data-index": i, "data-id": p.id, className: "fy-card" },
-      React.createElement(
-        "div",
-        { className: "fy-post-wrap"},
-        React.createElement(
-          "div",
-          { className: "fy-frame" },                    // NEW fixed-size frame
-          React.createElement(
-            "div",
-            { className: "fy-media-wrap" },
-            p.type === "video"
-              ? React.createElement("video", {
-                  src: p.mediaURL,
-                  className: "fy-media",
-                  loop: true,
-                  muted: soundOnPostId !== p.id,   // unmute only the post we toggled
-                  playsInline: true,
-                  onClick: (e) => {
-                    const v = e.currentTarget;
-                    if (v.paused) v.play();
-                    else v.pause();
-                  },
-                })
-              : React.createElement("img", {
-                  src: p.mediaURL,
-                  alt: p.caption,
-                  className: "fy-media",
-                })
-          ),
-          React.createElement(
-            "div",
-            { className: "fy-overlay" },
-            React.createElement(
-              "div",
-              { className: "fy-chip" },
-              React.createElement(
-                "span",
-                { className: "stars" },
-                (("★".repeat(Math.round(p.stars))) + "☆☆☆☆").slice(0, 5)
-              ),
-              p.restaurant ? React.createElement("span", { className: "sep" }, "·") : null,
-              p.restaurant ? React.createElement("span", { className: "rest" }, p.restaurant) : null,
-              React.createElement("span", { className: "sep" }, "·"),
-              React.createElement(
-                "span",
-                { className: "counts" },
-                "❤ ",
-                p.likeCount,
-                " · 💬 ",
-                p.commentCount
-              )
-            ),
-            React.createElement("p", { className: "fy-caption" }, p.caption),
-
-            React.createElement(
-              "div",
-              { className: "fy-meta" },
-              React.createElement("img", {
-                src: p.author.photoURL || "https://ui-avatars.com/api/?name=U",
-                className: "fy-avatar",
-                alt: "",
-              }),
-              React.createElement(
-                "span",
-                { 
-                  className: "fy-handle",
-                  role: "button",
-                  tabIndex: 0,
-                  title: "View Profile",
-                  onClick: (e) => {e.stopPropagation(); handleClick(p.authorId); },
-                },
-                "@",
-                p.author.displayName || "user"
-              )
-              ),
-              React.createElement(
-                "button",
-                {
-                  type: "button",
-                  className: "fy-volbtn",
-                  onClick: (e) => { e.stopPropagation(); toggleSound(p.id); },
-                  title: soundOnPostId === p.id ? "Mute" : "Unmute",
-                },
-                soundOnPostId === p.id ? "🔊" : "🔇"
-              )
-        )
-      ),
-      buttonBar(p),
-
-      (openCommentsPostId === p.id)
-        ? React.createElement(CommentPanel, {
-            postId: p.id,
-            onClose: () => setOpenCommentsPostId(null),
-          })
-      : null
-
-      )
-
-     )
-   );
-
-  const emptyView = !empty
-    ? null
-    : React.createElement("div", { className: "fy-empty" }, "No public posts yet — create one!");
-
-  const main = React.createElement(
-    "main",
-    { ref: containerRef, className: "fy-feed" },
-    userbar,
-    ...cards,
-    emptyView
-  );
-
-  const toggleSound = (postId) => {
-    const container = containerRef.current;
-    const video = container?.querySelector(`section[data-index][data-id='${postId}'] video`);
-    if (!video) return;
-    const willUnmute = soundOnPostId !== postId;
-    try {
-      // iOS/Safari requires play() in the same user gesture that unmutes
-      video.muted = !willUnmute;
-      if (willUnmute) video.play().catch(() => {});
-      setSoundOnPostId(willUnmute ? postId : null);
-    } catch (e) {
-      console.error("toggleSound failed", e);
-    }
-  };
-
-
-  return React.createElement("div", { className: "fy-root" }, main);
 };
 
 export default Feed;
