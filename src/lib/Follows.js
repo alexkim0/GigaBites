@@ -114,30 +114,64 @@ export async function toggleFollow(targetUid, userId) {
   const followerRef    = doc(db, "user", targetUid, "followers", userId);
   const followingRef   = doc(db, "user", userId, "following", targetUid);
 
+  // 🔹 1) Read both user docs OUTSIDE the transaction to grab names/photos
+  const [targetSnap, meSnap] = await Promise.all([
+    getDoc(targetUserRef),
+    getDoc(meUserRef),
+  ]);
+
+  const targetData = targetSnap.exists() ? targetSnap.data() : {};
+  const meData     = meSnap.exists()     ? meSnap.data()     : {};
+
+  const targetName  = targetData.user_name || "";
+  const targetPhoto = targetData.photoURL || null;
+
+  const meName      = meData.user_name || "";
+  const mePhoto     = meData.photoURL || null;
+
+  // 🔹 2) Transaction for follow/unfollow + counters + subcollection docs
   const result = await runTransaction(db, async (tx) => {
     const followerSnap = await tx.get(followerRef);
 
     if (!followerSnap.exists()) {
+      // =========================
       // FOLLOW
+      // =========================
+
+      // In target's followers subcollection, store info about the follower (me)
       tx.set(followerRef, {
-        uid: userId,
-        targetUid,
+        uid: userId,              // or followerUid: userId
+        followerUid: userId,
+        user_name: meName,
+        photoURL: mePhoto,
         createdAt: serverTimestamp(),
       });
+
+      // In my following subcollection, store info about the person I'm following
       tx.set(followingRef, {
-        uid: userId,
-        followingUid: targetUid,
+        uid: targetUid,           // or targetUid: targetUid
+        targetUid: targetUid,
+        user_name: targetName,
+        photoURL: targetPhoto,
         createdAt: serverTimestamp(),
       });
-      tx.update(targetUserRef,  { user_follower:  increment(1) });
-      tx.update(meUserRef,      { user_following: increment(1) });
+
+      // Update counters
+      tx.update(targetUserRef, { user_follower:  increment(1) });
+      tx.update(meUserRef,     { user_following: increment(1) });
+
       return { following: true };
     } else {
+      // =========================
       // UNFOLLOW
+      // =========================
+
       tx.delete(followerRef);
       tx.delete(followingRef);
-      tx.update(targetUserRef,  { user_follower:  increment(-1) });
-      tx.update(meUserRef,      { user_following: increment(-1) });
+
+      tx.update(targetUserRef, { user_follower:  increment(-1) });
+      tx.update(meUserRef,     { user_following: increment(-1) });
+
       return { following: false };
     }
   });

@@ -18,6 +18,8 @@
   import { Profilepage } from "./pages/profilepage/Profilepage";
   import { Createpage } from "./pages/createpage/Createpage"
   import { Postpage } from "./pages/postpage/Postpage";
+  import Messagepage from "./pages/Messagepage/Messagepage";
+  import MigrateFollowingUsernames from "./dev/MigrateFollowingUsernames";
 
   function ProfilepageWithKey() {
       const { uid } = useParams();
@@ -135,6 +137,22 @@ function AppContent({ currentUser }) {
                   <Postpage/>
                 </ProtectedRoute>
               } 
+            />
+            <Route
+              path="/messagepage"
+              element={
+                <ProtectedRoute>
+                  <Messagepage/>
+                </ProtectedRoute>
+              }  
+            />
+            <Route
+              path="/dev/migrate-following"
+              element={
+                <ProtectedRoute>
+                  <MigrateFollowingUsernames />
+                </ProtectedRoute>
+              }
             />
 
             <Route path="*" element={<Navigate to="/" />} />

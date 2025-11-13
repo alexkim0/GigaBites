@@ -3,7 +3,7 @@ import {
     collection, query, where,
     orderBy, limit, getDocs, startAfter,
 } from "firebase/firestore";
-import { db } from "../config/firebase-config";
+import { db, auth } from "../config/firebase-config";
 
 export function UseUserPosts(profileId, pageSize = 18) {
     const [posts, setPosts] = useState([]);
@@ -13,16 +13,31 @@ export function UseUserPosts(profileId, pageSize = 18) {
 
     const loadedForIdRef = useRef(null);
 
+    // figure out if this is my own profile
+    const currentUid = auth.currentUser?.uid || null;
+    const isOwnProfile = currentUid && currentUid === profileId;
+
     // Build the base query only when inputs(profileId, pageSize) change
     const baseQuery = useMemo(() => {
         if (!profileId) return null;
+
+        const baseConstraints = [
+        where("post_authorId", "==", profileId),
+        ];
+
+        // if it's NOT my profile, only show public posts
+        if (!isOwnProfile) {
+        baseConstraints.push(where("post_visibility", "==", "public"));
+        }
+
+        baseConstraints.push(orderBy("post_date", "desc"));
+        baseConstraints.push(limit(pageSize));
+
         return query(
-            collection(db, "post"),
-            where("post_authorId", "==", profileId),
-            orderBy("post_date", "desc"),
-            limit(pageSize)
+        collection(db, "post"),
+        ...baseConstraints
         );
-    }, [profileId, pageSize]);
+    }, [profileId, pageSize, isOwnProfile]);
 
   // Core loader (first page + next pages)
     const load = async () => {
@@ -34,15 +49,22 @@ export function UseUserPosts(profileId, pageSize = 18) {
 
             // For subsequent pages, continue after the last doc we saw
             if (cursor) {
-                q = query(
-                collection(db, "post"),
-                where("post_authorId", "==", profileId),
-                orderBy("post_date", "desc"),
-                startAfter(cursor),
-                limit(pageSize)
-                );
-            }
+                const constraints = [
+                    where("post_authorId", "==", profileId),
+                ];
 
+                // ⭐ same visibility rule for pagination
+                if (!isOwnProfile) {
+                    constraints.push(where("post_visibility", "==", "public"));
+                }
+
+                constraints.push(orderBy("post_date", "desc"));
+                constraints.push(startAfter(cursor));
+                constraints.push(limit(pageSize));
+
+                q = query(collection(db, "post"), ...constraints);
+            }
+            
             const snap = await getDocs(q);
 
             const newPosts = snap.docs.map((d) => ({

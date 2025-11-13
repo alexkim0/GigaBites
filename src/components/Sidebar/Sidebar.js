@@ -64,6 +64,14 @@ function Sidebar() {
           <span className="tooltip">Profile</span>
         </li>
 
+        <li onClick={() => navigate("/messagepage")}>
+          <a href="">
+            <i className="bx bx-message-circle"></i>
+            <span className="nav-item">Messages</span>
+          </a>
+          <span className="tooltip">Messages</span>
+        </li>
+
       </ul>
     </div>
   );
