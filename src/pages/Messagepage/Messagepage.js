@@ -4,12 +4,20 @@ import { ensureConversation } from "../../lib/Chat";
 import { useConversations } from "../../hooks/UseConversations";
 import { useMessages } from "../../hooks/UseMessages";
 import { useFollowingList } from "../../hooks/UseFollowingList"
+import { useUserNameMap } from "../../hooks/UseUsernameMap";
 import Modal from "../../components/Modal/Modal"
 import "./Messagepage.css";
 
 export default function Messagepage() {
     const me = auth.currentUser?.uid;
     const convos = useConversations(me);
+
+    // collect all "other" uids once
+    const otherUids = convos
+        .map(c => c.participants.find(u => u !== me))
+        .filter(Boolean);
+    
+    const nameMap = useUserNameMap(otherUids);
 
     const [activeCid, setActiveCid] = useState(null);
     const { list: messages, send } = useMessages(activeCid);
@@ -64,6 +72,7 @@ export default function Messagepage() {
             <div className="msg-convos">
                 {convos.map((c) => {
                     const other = c.participants?.find((u) => u !== me);
+                    const userName = nameMap[other];
                     const unread = c.unread?.[me] ?? 0;
                     return (
                         <button
@@ -73,14 +82,14 @@ export default function Messagepage() {
                         >
                             <div className="msg-line">
                                 <span className="msg-name">
-                                    @{String(other || "").slice(0, 6)}
+                                    {userName ? `@${userName}` : ""}
                                 </span>
-                                {unread > 0 && (
+                                {userName && unread > 0 && (
                                     <span className="msg-badge">{unread}</span>
                                 )}
                             </div>
                             <div className="msg-last">
-                                {c.lastMessage || "…"}
+                                {userName && c.lastMessage || "…"}
                             </div>
                         </button>
                     );
