@@ -31,7 +31,7 @@ export default function FollowListPanel({ mode, userId, onCloseModal }) {
             <div className="flp-info">
               <img
                 className="flp-avatar"
-                src={it.profile.photoURL || "https://ui-avatars.com/api/?name=U"}
+                src={it.profile.user_pfp || "https://ui-avatars.com/api/?name=U"}
                 alt=""
               />
               <div className="flp-meta">

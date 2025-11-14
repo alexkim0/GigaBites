@@ -10,12 +10,12 @@ const userCache = new Map(); // uid -> { user_name, photoURL }
 
 // Gets User's username and profile picture if they have one
 async function getUserProfile(uid) {
-  if (!uid) return { user_name: "user", photoURL: "" };
+  if (!uid) return { user_name: "user", user_pfp: "" };
   if (userCache.has(uid)) return userCache.get(uid);
   const snap = await getDoc(doc(db, "user", uid));
   const prof = snap.exists()
-    ? { user_name: snap.data().user_name || "user", photoURL: snap.data().photoURL || "" }
-    : { user_name: "user", photoURL: "" };
+    ? { user_name: snap.data().user_name || "user", user_pfp: snap.data().user_pfp || "" }
+    : { user_name: "user", user_pfp: "" };
   userCache.set(uid, prof);
   return prof;
 }
@@ -124,10 +124,10 @@ export async function toggleFollow(targetUid, userId) {
   const meData     = meSnap.exists()     ? meSnap.data()     : {};
 
   const targetName  = targetData.user_name || "";
-  const targetPhoto = targetData.photoURL || null;
+  const targetPhoto = targetData.user_pfp || null;
 
   const meName      = meData.user_name || "";
-  const mePhoto     = meData.photoURL || null;
+  const mePhoto     = meData.user_pfp || null;
 
   // 🔹 2) Transaction for follow/unfollow + counters + subcollection docs
   const result = await runTransaction(db, async (tx) => {
@@ -143,7 +143,7 @@ export async function toggleFollow(targetUid, userId) {
         uid: userId,              // or followerUid: userId
         followerUid: userId,
         user_name: meName,
-        photoURL: mePhoto,
+        user_pfp: mePhoto,
         createdAt: serverTimestamp(),
       });
 
@@ -152,7 +152,7 @@ export async function toggleFollow(targetUid, userId) {
         uid: targetUid,           // or targetUid: targetUid
         targetUid: targetUid,
         user_name: targetName,
-        photoURL: targetPhoto,
+        user_pfp: targetPhoto,
         createdAt: serverTimestamp(),
       });
 
