@@ -1,10 +1,11 @@
+// src/pages/profilepage/Profilepage.js
 import React, { useState, useEffect } from "react";
 import { auth } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
-import { db } from '../../config/firebase-config';
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { UseUserPosts } from "../../hooks/UseUserPosts"
+import { db } from "../../config/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
+import { UseUserPosts } from "../../hooks/UseUserPosts";
 import { watchFollowerCount } from "../../lib/Follows";
 
 import "./Profilepage.css";
@@ -14,22 +15,18 @@ import FollowButton from "../../components/FollowButton/FollowButton";
 import Modal from "../../components/Modal/Modal";
 import FollowListPanel from "../../components/FollowListPanel/FollowListPanel";
 
-
-
 export const Profilepage = () => {
-    const user = auth.currentUser;
-    const navigate = useNavigate();
-    const { uid } = useParams();
-    const { posts, loadingPost, hasMore, loadMore } = UseUserPosts(uid, 18);
-    const isOwnProfile = user?.uid === uid;
+  const user = auth.currentUser;
+  const navigate = useNavigate();
+  const { uid } = useParams();
+  const { posts, loadingPost, hasMore, loadMore } = UseUserPosts(uid, 18);
+  const isOwnProfile = user?.uid === uid;
 
-
-
-    // whose profile are we viewing (from the URL uid)
-    const [profile, setProfile] = useState(null);
-    const [profileLoading, setProfileLoading] = useState(true);
-    const [followerCount, setFollowerCount] = useState(0);
-    const [followModal, setFollowModal] = useState(null); 
+  // whose profile are we viewing (from the URL uid)
+  const [profile, setProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followModal, setFollowModal] = useState(null);
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -55,160 +52,162 @@ export const Profilepage = () => {
         if (!cancelled) setProfileLoading(false);
       }
     })();
-    return () => { cancelled = true; };
-  }, [uid, db]);
-
-    // Realtime follower count (updates instantly when FollowButton updates Firestore)
-    useEffect(() => {
-        if (!uid) return;
-        const unsub = watchFollowerCount(uid, setFollowerCount);
-        return () => unsub && unsub();
-    }, [uid]);
-
-
-    const handleVideoHover = (e, play) => {
-        const v = e.currentTarget;
-        if (play) v.play();
-        else v.pause();
+    return () => {
+      cancelled = true;
     };
+  }, [uid]);
 
-    const logout = async () => {
-        try {
-            await signOut(auth);
-            navigate("/login");
-        } catch (err) {
-            console.error(err);
-        }
-    };
+  // Realtime follower count (updates instantly when FollowButton updates Firestore)
+  useEffect(() => {
+    if (!uid) return;
+    const unsub = watchFollowerCount(uid, setFollowerCount);
+    return () => unsub && unsub();
+  }, [uid]);
 
+  const handleVideoHover = (e, play) => {
+    const v = e.currentTarget;
+    if (play) v.play();
+    else v.pause();
+  };
 
-    if (!user) return <p>You must be logged in to view your profile.</p>;
-    if (profileLoading) return <p>Loading...</p>;
-    if (!profile) return <p>Profile not found.</p>;
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    const username = profile.user_name || "User not found";
-    const following = profile.user_following ?? 0;
-    const follower = profile.user_follower ?? 0;
-    const photoURL = profile.user_pfp || userIcon;
+  if (!user) return <p>You must be logged in to view your profile.</p>;
+  if (profileLoading) return <p>Loading...</p>;
+  if (!profile) return <p>Profile not found.</p>;
 
+  const username = profile.user_name || "User not found";
+  const following = profile.user_following ?? 0;
+  const follower = profile.user_follower ?? 0; // still available if you need it
+  const photoURL = profile.user_pfp || userIcon;
+  const bio = profile.user_bio || "";          // NEW: biography from Firestore
 
-    return (
-        <div className="profile-page-wrap">
-            {isOwnProfile && (
-                <header className="fy-header">
-                    <div className="fy-actions">
-                        <DivButton className="ghost2" onClick={() => navigate(`/profileSettings/${uid}`)}>
-                            ⚙️
-                        </DivButton>
-                    </div>
-                </header>
-            )}
-            <img className="pUserIcon" src={photoURL} alt=""/>
-            <p className="pUsernameField">{username}</p>
-            <div className="pInfoContainer">
-                <p className="pFollowsField">Posts: {posts.length}</p>
-                <p 
-                    className="pFollowsField clickable"
-                    onClick={() => setFollowModal("followers")}
-                    title="View followers"
-                >
-                    Follower: {followerCount}
-                </p>
-                <p 
-                    className="pFollowsField clickable"
-                    onClick={() => setFollowModal("following")}
-                    title="View following"
-                >
-                    Following: {following}
-                </p>
-            </div>
+  return (
+    <div className="profile-page-wrap">
+      {isOwnProfile && (
+        <header className="fy-header">
+          <div className="fy-actions">
+            <DivButton
+              className="ghost2"
+              onClick={() => navigate(`/profileSettings/${uid}`)}
+            >
+              ⚙️
+            </DivButton>
+          </div>
+        </header>
+      )}
 
-            {!isOwnProfile && (
-                <div className="profile-button-container">
-                    <div className="profileLogOutBox">
-                        <FollowButton
-                            targetUid={uid}
-                            initialFollowerCount={profile.user_follower ?? 0}
-                        />
-                    </div>
-                </div>
-            )}
-            <div className="profile-grid">
-                {posts.map((p) => {
-                    const m = p.post_media?.[0];
-                    if (!m) return null;
-                    const IsImage = m.mimeType?.startsWith("image/");
-                    const IsVideo = m.mimeType?.startsWith("video/");
+      <img className="pUserIcon" src={photoURL} alt="" />
+      <p className="pUsernameField">{username}</p>
 
-                    return (
-                        <button
-                            key={p.id}
-                            className="profile-tile"
-                            onClick={() => navigate(`/postpage/${p.id}`)}
-                        >
-                            {IsImage && (
-                                <img
-                                    src={m.downloadURL}
-                                    alt={p.post_caption || ""}
-                                    className="tile-media tile-media-img"
-                                    loading="lazy"
-                                />
-                            )}
+      {/* NEW: Bio, only show if not empty */}
+      {bio.trim().length > 0 && (
+        <p className="pBioField">{bio}</p>
+      )}
 
-                            {IsVideo && (
-                                <>
-                                    <video
-                                        src={m.downloadURL}
-                                        className="tile-media tile-media-video"
-                                        muted
-                                        loop
-                                        playsInline
-                                        preload="metadata"
-                                        onMouseOver={(e) => handleVideoHover(e, true)}
-                                        onMouseOut={(e) => handleVideoHover(e, false)}
-                                    />
-                                    <span className="title-badge">▶</span>
-                                </>
-                            )}
-                        </button>
-                    );
-                })}
-            </div>
-            
-            <div className="loadmore">
-                {hasMore ? (
-                    <button className="btn" onClick={loadMore} disabled={loadingPost}>
-                    {loadingPost ? "Loading..." : "Load more"}
-                    </button>
-                ) : (
-                    <span>No more posts</span>
-                )}
-            </div>
+      <div className="pInfoContainer">
+        <p className="pFollowsField">Posts: {posts.length}</p>
+        <p
+          className="pFollowsField clickable"
+          onClick={() => setFollowModal("followers")}
+          title="View followers"
+        >
+          Follower: {followerCount}
+        </p>
+        <p
+          className="pFollowsField clickable"
+          onClick={() => setFollowModal("following")}
+          title="View following"
+        >
+          Following: {following}
+        </p>
+      </div>
 
-            {user?.uid === uid && (
-            <div className="profileLogOutBox">
-                <DivButton className="profileLogOut" onClick={logout}>
-                Logout
-                </DivButton>
-            </div>
-            )}
-            
-            {/*
-            <div>
-                <h2>Profile of {uid}</h2>
-                <p>Total posts: {posts.length}</p>
-            </div>
-            */}
-        <Modal open={!!followModal} onClose={() => setFollowModal(null)}>
-            <FollowListPanel 
-                mode={followModal || "followers"}
-                userId={uid}
-                onCloseModal={() => setFollowModal(null)} />
-        </Modal>
+      {!isOwnProfile && (
+        <div className="profile-button-container">
+          <div className="profileLogOutBox">
+            <FollowButton
+              targetUid={uid}
+              initialFollowerCount={profile.user_follower ?? 0}
+            />
+          </div>
         </div>
+      )}
 
-    )
+      <div className="profile-grid">
+        {posts.map((p) => {
+          const m = p.post_media?.[0];
+          if (!m) return null;
+          const IsImage = m.mimeType?.startsWith("image/");
+          const IsVideo = m.mimeType?.startsWith("video/");
 
+          return (
+            <button
+              key={p.id}
+              className="profile-tile"
+              onClick={() => navigate(`/postpage/${p.id}`)}
+            >
+              {IsImage && (
+                <img
+                  src={m.downloadURL}
+                  alt={p.post_caption || ""}
+                  className="tile-media tile-media-img"
+                  loading="lazy"
+                />
+              )}
 
+              {IsVideo && (
+                <>
+                  <video
+                    src={m.downloadURL}
+                    className="tile-media tile-media-video"
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    onMouseOver={(e) => handleVideoHover(e, true)}
+                    onMouseOut={(e) => handleVideoHover(e, false)}
+                  />
+                  <span className="title-badge">▶</span>
+                </>
+              )}
+            </button>
+          );
+        })}
+      </div>
 
-}
+      <div className="loadmore">
+        {hasMore ? (
+          <button className="btn" onClick={loadMore} disabled={loadingPost}>
+            {loadingPost ? "Loading..." : "Load more"}
+          </button>
+        ) : (
+          <span>No more posts</span>
+        )}
+      </div>
+
+      {user?.uid === uid && (
+        <div className="profileLogOutBox">
+          <DivButton className="profileLogOut" onClick={logout}>
+            Logout
+          </DivButton>
+        </div>
+      )}
+
+      <Modal open={!!followModal} onClose={() => setFollowModal(null)}>
+        <FollowListPanel
+          mode={followModal || "followers"}
+          userId={uid}
+          onCloseModal={() => setFollowModal(null)}
+        />
+      </Modal>
+    </div>
+  );
+};
