@@ -148,7 +148,7 @@
 
 .msg-bubble.mine {
   align-self: flex-end;
-  background: #007aff;
+  background: #ff8787;
   color: #fff;
 }
 
@@ -246,4 +246,31 @@
 
 .modal-follow-name {
   font-size: 0.95rem;
+}
+
+/* Row that holds avatar + bubble */
+.msg-row {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 6px;
+}
+
+/* Incoming messages on left, outgoing on right */
+.msg-row.mine {
+  justify-content: flex-end;
+}
+
+/* Avatar style */
+.msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  object-fit: cover;
+  margin-right: 6px;
+  cursor: pointer; 
+}
+
+.msg-row.mine .msg-avatar {
+  margin-left: 6px;
+  margin-right: 0;
 }

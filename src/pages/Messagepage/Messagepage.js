@@ -6,10 +6,15 @@ import { useConversations } from "../../hooks/UseConversations";
 import { useMessages } from "../../hooks/UseMessages";
 import { useFollowingList } from "../../hooks/UseFollowingList"
 import { useUserNameMap } from "../../hooks/UseUsernameMap";
+import { db } from "../../config/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
 import Modal from "../../components/Modal/Modal"
+import { useNavigate, useParams } from "react-router-dom";
+
 import "./Messagepage.css";
 
 export default function Messagepage() {
+    const navigate = useNavigate();
     const me = auth.currentUser?.uid;
     const convos = useConversations(me);
     const threadRef = useRef(null);
@@ -24,6 +29,8 @@ export default function Messagepage() {
     const [activeCid, setActiveCid] = useState(null);
     const { messages, send, hasMore, loadingMore, loadMore } = useMessages(activeCid);
     const [input, setInput] = useState("");
+    const [otherUser, setOtherUser] = useState(null);
+    const [meProfile, setMeProfile] = useState(null);
 
     // search + following list for "new chat" modal
     const [search, setSearch] = useState("");
@@ -31,6 +38,68 @@ export default function Messagepage() {
 
     // controls the overlay/modal
     const [showFollowModal, setShowFollowModal] = useState(false);
+
+    // Load your own profile once
+    useEffect(() => {
+    if (!me) return;
+
+    (async () => {
+        try {
+        const ref = doc(db, "user", me);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+            setMeProfile({
+            id: me,
+            user_name: snap.data().user_name || "",
+            user_pfp: snap.data().user_pfp || "",
+            });
+        } else {
+            setMeProfile({
+            id: me,
+            user_name: me.slice(0, 6),
+            user_pfp: "",
+            });
+        }
+        } catch (e) {
+        console.error("Failed to load me profile", e);
+        setMeProfile(null);
+        }
+    })();
+    }, [me]);
+
+    // Whenever activeCid changes, figure out other participant's uid and load their user document
+    useEffect(() => {
+    if (!activeCid || !me) return;
+
+    const convo = convos.find(c => c.id === activeCid);
+    if (!convo) return;
+
+    const otherUid = convo.participants?.find(u => u !== me);
+    if (!otherUid) return;
+
+    (async () => {
+        try {
+        const uref = doc(db, "user", otherUid);
+        const snap = await getDoc(uref);
+        if (snap.exists()) {
+            setOtherUser({
+            id: otherUid,
+            user_name: snap.data().user_name || "",
+            user_pfp: snap.data().user_pfp || "",
+            });
+        } else {
+            setOtherUser({
+            id: otherUid,
+            user_name: otherUid.slice(0, 6),
+            user_pfp: "",
+            });
+        }
+        } catch (e) {
+        console.error("Failed to load other user", e);
+        setOtherUser(null);
+        }
+    })();
+    }, [activeCid, convos, me]);
 
     // auto-select the most recent conversation
     useEffect(() => {
@@ -154,16 +223,56 @@ export default function Messagepage() {
 
                     {loadingMore && <div className="msg-loading">Loading…</div>}
 
-                    {messages.map((m) => (
+                    {/* loads messages and pfp */}
+                    {messages.map((m) => {
+                    const mine = m.senderId === me;
+
+                    const avatarSrc = mine
+                        ? (meProfile?.user_pfp || "https://ui-avatars.com/api/?name=Me")
+                        : (otherUser?.user_pfp || "https://ui-avatars.com/api/?name=U");
+
+                    const avatarUid = mine ? me : otherUser?.id; // whose profile to open
+
+                    return (
                         <div
-                            key={m.id}
-                            className={`msg-bubble ${
-                                m.senderId === me ? "mine" : ""
-                            }`}
+                        key={m.id}
+                        className={`msg-row ${mine ? "mine" : "theirs"}`}
                         >
+                        {/* avatar on left for others, on right for me (optional) */}
+                        {!mine && (
+                            <img
+                            className="msg-avatar"
+                            src={avatarSrc}
+                            alt=""
+                            onClick={(e) => {
+                                e.stopPropagation();              // don’t trigger other click handlers
+                                if (avatarUid) {
+                                navigate(`/profilepage/${avatarUid}`);
+                                }
+                            }}
+                            />
+                        )}
+
+                        <div className={`msg-bubble ${mine ? "mine" : ""}`}>
                             {m.text}
                         </div>
-                    ))}
+
+                        {mine && (
+                            <img
+                            className="msg-avatar mine"
+                            src={avatarSrc}
+                            alt=""
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (avatarUid) {
+                                navigate(`/profilepage/${avatarUid}`);
+                                }
+                            }}
+                            />
+                        )}
+                        </div>
+                    );
+                    })}
                 </div>
 
                 <form
@@ -215,7 +324,7 @@ export default function Messagepage() {
                             }}
                         >
                             <img
-                                src={f.photoURL || "https://ui-avatars.com/api/?name=U"}
+                                src={f.user_pfp || "https://ui-avatars.com/api/?name=U"}
                                 alt=""
                                 className="modal-follow-avatar"
                             />
