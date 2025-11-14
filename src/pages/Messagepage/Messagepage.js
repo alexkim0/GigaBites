@@ -1,5 +1,5 @@
 // src/pages/Messagepage/Messagepage.js
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { auth } from "../../config/firebase-config";
 import { ensureConversation } from "../../lib/Chat";
 import { useConversations } from "../../hooks/UseConversations";
@@ -12,6 +12,7 @@ import "./Messagepage.css";
 export default function Messagepage() {
     const me = auth.currentUser?.uid;
     const convos = useConversations(me);
+    const threadRef = useRef(null);
 
     // collect all "other" uids once
     const otherUids = convos
@@ -21,13 +22,12 @@ export default function Messagepage() {
     const nameMap = useUserNameMap(otherUids);
 
     const [activeCid, setActiveCid] = useState(null);
-    const { list: messages, send } = useMessages(activeCid);
+    const { messages, send, hasMore, loadingMore, loadMore } = useMessages(activeCid);
     const [input, setInput] = useState("");
 
     // search + following list for "new chat" modal
     const [search, setSearch] = useState("");
     const { following } = useFollowingList(me, search);
-
 
     // controls the overlay/modal
     const [showFollowModal, setShowFollowModal] = useState(false);
@@ -37,6 +37,17 @@ export default function Messagepage() {
         if (activeCid) return;
         if (convos.length > 0) setActiveCid(convos[0].id);
     }, [convos, activeCid]);
+    
+    // scroll to bottom whenever activeCid changes OR messages change
+    useEffect(() => {
+    if (!threadRef.current) return;
+    if (!activeCid) return;
+    if (!messages || messages.length === 0) return;
+
+    const el = threadRef.current;
+    // move to bottom: scrollTop = scrollHeight
+    el.scrollTop = el.scrollHeight;
+    }, [activeCid, messages]);
 
     // When you click someone in "following", create/open DM
     const startDM = async (targetUid) => {
@@ -113,7 +124,29 @@ export default function Messagepage() {
             </div>
             ) : (
             <>
-                <div className="msg-thread">
+                <div className="msg-thread"
+                     ref={threadRef}
+                     onScroll={async (e) => {
+                        {/* el : event location */}
+                        const el = e.currentTarget;
+                        if (el.scrollTop === 0 && hasMore && !loadingMore) {
+                            const prevHeight = el.scrollHeight;
+                            await loadMore();
+                            // keep user at roughly the same visible position after we prepend
+                            requestAnimationFrame(() => {
+                                const newHeight = el.scrollHeight;
+                                el.scrollTop = newHeight - prevHeight;
+                            });
+                        }
+                }}>
+                    {hasMore && !loadingMore && (
+                        <div className="msg-load-more-hint">
+                        Scroll up to load older messages…
+                        </div>
+                    )}
+
+                    {loadingMore && <div className="msg-loading">Loading…</div>}
+
                     {messages.map((m) => (
                         <div
                             key={m.id}

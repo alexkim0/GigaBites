@@ -2,7 +2,7 @@
 import { db } from "../config/firebase-config";
 import {
   collection, doc, getDoc, setDoc, addDoc, onSnapshot,
-  query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction
+  query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction, getDocs
 } from "firebase/firestore";
 
 /** Deterministic ID for 1:1 conversation */
@@ -80,10 +80,40 @@ export function watchMessages(cid, cb, pageSize = 30) {
     limit(pageSize)
   );
   return onSnapshot(q, (snap) => {
-    const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    // reverse for UI (oldest → newest)
-    cb(msgs.slice().reverse());
+    const docs = snap.docs;
+    const msgs = docs.map(d => ({ id: d.id, ...d.data() }));
+    // oldest → newest for UI
+    const ordered = msgs.slice().reverse();
+
+    // ⬅️ pass both messages and the snapshot so we can paginate
+    cb(ordered, snap);
   });
+}
+
+// loads older messages when scrolling up
+export async function fetchOlderMessages(cid, cursorDoc, pageSize = 30) {
+  if (!cid || !cursorDoc) {
+    return { msgs: [], lastDoc: null };
+  }
+
+  const q = query(
+    collection(db, "conversations", cid, "messages"),
+    orderBy("createdAt", "desc"),
+    startAfter(cursorDoc),      // continue *after* the last doc we saw
+    limit(pageSize)
+  );
+
+  const snap = await getDocs(q);
+  const docs = snap.docs;
+  const batch = docs.map(d => ({ id: d.id, ...d.data() }));
+
+  // again, Firestore returns newest→oldest (desc), so reverse for UI
+  const ordered = batch.slice().reverse();
+
+  return {
+    msgs: ordered,                           // oldest → newest
+    lastDoc: docs[docs.length - 1] || null,  // new cursor
+  };
 }
 
 /** Send a message + update conversation metadata + increment recipient unread */
