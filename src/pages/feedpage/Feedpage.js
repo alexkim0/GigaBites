@@ -108,7 +108,7 @@ export const Feed = () => {
             author = usnap.exists()
               ? {
                   displayName: usnap.data().user_name || "",
-                  photoURL: usnap.data().photoURL || "",
+                  photoURL: usnap.data().user_pfp || "",
                 }
               : {
                   displayName: (p.post_authorId || "user").slice(0, 6),

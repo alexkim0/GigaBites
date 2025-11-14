@@ -89,7 +89,7 @@ export const Profilepage = () => {
     const username = profile.user_name || "User not found";
     const following = profile.user_following ?? 0;
     const follower = profile.user_follower ?? 0;
-    const photoURL = profile.photoURL || userIcon;
+    const photoURL = profile.user_pfp || userIcon;
 
 
     return (
