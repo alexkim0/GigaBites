@@ -66,8 +66,8 @@ function Sidebar() {
         </li>
 
         <li onClick={() => navigate("/messagepage")}>
-          <a href="">
-            <i className="bx bx-message-circle"></i>
+          <a href="#" onClick={(e) => e.preventDefault()}>
+            <i className="bx bxs-message-dots"></i>  
             <span className="nav-item">Messages</span>
           </a>
           <span className="tooltip">Messages</span>

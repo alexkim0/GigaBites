@@ -6,11 +6,24 @@
 .msg-root {
   display: flex;
   height: 100vh;
-  padding-left: 80px;          /* your sidebar width */
+  padding-left: 80px;
   box-sizing: border-box;
   background: #fafafa;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  transition: padding-left 0.25s ease;
 }
+
+/* Sidebar collapsed (default) → 80px space */
+.sidebar + .app .msg-root {
+  padding-left: 80px;
+}
+
+/* Sidebar expanded (has .active) → 250px space */
+.sidebar.active + .app .msg-root {
+  padding-left: 250px;
+}
+
 
 /* LEFT: conversations */
 .msg-left {
@@ -105,6 +118,10 @@
 .msg-thread {
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  justify-content: flex-end;
   padding-right: 4px;
   margin-bottom: 8px;
 }
@@ -117,6 +134,17 @@
   border-radius: 16px;
   background: #e5e5ea;
   color: #000;
+}
+
+.msg-right-header {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.msg-right-name {
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .msg-bubble.mine {
