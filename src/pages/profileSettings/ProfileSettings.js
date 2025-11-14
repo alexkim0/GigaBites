@@ -172,15 +172,6 @@ export const ProfileSettings = () => {
     }
   };
 
-  const logout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/login");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   if (loading || profileLoading) {
     return (
       <div className="ps-root">
@@ -284,9 +275,6 @@ export const ProfileSettings = () => {
 
         {/* Actions */}
         <div className="ps-bot-row">
-          <DivButton className="ps-logout" onClick={logout}>
-            Logout
-          </DivButton>
           <DivButton
             className={`ps-save ${saving ? "is-saving" : ""}`}
             onClick={saveInfo}

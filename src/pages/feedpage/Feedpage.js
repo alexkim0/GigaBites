@@ -308,7 +308,7 @@ export const Feed = () => {
                   title="Comments"
                 >
                   <i
-                    className={openCommentsPostId ? "bx bxs-message-detail" : "bx bx-message-detail"}
+                    className={openCommentsPostId ? "bx bxs-message-circle-dots" : "bx bx-message-circle-dots"}
                     style={{ color: openCommentsPostId ? "#000" : "#000" }}
                   ></i>
                   {String(p.commentCount ?? 0)}

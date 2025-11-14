@@ -64,18 +64,12 @@ export const Profilepage = () => {
     return () => unsub && unsub();
   }, [uid]);
 
-  const handleVideoHover = (e, play) => {
+  const handleVideoHover = async (e, play) => {
     const v = e.currentTarget;
-    if (play) v.play();
-    else v.pause();
-  };
-
-  const logout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/login");
-    } catch (err) {
-      console.error(err);
+    if (play) {
+      v.play().catch(() => {});
+    } else {
+      v.pause();
     }
   };
 
@@ -189,17 +183,9 @@ export const Profilepage = () => {
             {loadingPost ? "Loading..." : "Load more"}
           </button>
         ) : (
-          <span>No more posts</span>
+          <span></span>
         )}
       </div>
-
-      {user?.uid === uid && (
-        <div className="profileLogOutBox">
-          <DivButton className="profileLogOut" onClick={logout}>
-            Logout
-          </DivButton>
-        </div>
-      )}
 
       <Modal open={!!followModal} onClose={() => setFollowModal(null)}>
         <FollowListPanel
