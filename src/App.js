@@ -20,6 +20,7 @@
   import { Postpage } from "./pages/postpage/Postpage";
   import Messagepage from "./pages/Messagepage/Messagepage";
   import MigrateFollowingUsernames from "./dev/MigrateFollowingUsernames";
+  import { ProfileSettings } from "./pages/profileSettings/ProfileSettings";
 
   function ProfilepageWithKey() {
       const { uid } = useParams();
@@ -151,6 +152,15 @@ function AppContent({ currentUser }) {
               element={
                 <ProtectedRoute>
                   <MigrateFollowingUsernames />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profileSettings/:uid"
+              element={
+                <ProtectedRoute>
+                  <ProfileSettings/>
                 </ProtectedRoute>
               }
             />
