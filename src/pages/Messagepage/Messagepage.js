@@ -7,7 +7,7 @@ import { useMessages } from "../../hooks/UseMessages";
 import { useFollowingList } from "../../hooks/UseFollowingList"
 import { useUserNameMap } from "../../hooks/UseUsernameMap";
 import { db } from "../../config/firebase-config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
 import Modal from "../../components/Modal/Modal"
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -38,6 +38,68 @@ export default function Messagepage() {
 
     // controls the overlay/modal
     const [showFollowModal, setShowFollowModal] = useState(false);
+
+    // new: live list of profiles you follow
+    const [followingProfiles, setFollowingProfiles] = useState([]);
+    const [followingLoading, setFollowingLoading] = useState(true);
+
+    const filteredFollowing = useMemo(() => {
+        const q = search.trim().toLowerCase();
+        if (!q) return followingProfiles;
+        return followingProfiles.filter((f) => {
+            const name = (f.user_name || "").toLowerCase();
+            return name.includes(q);
+        });
+    }, [followingProfiles, search]);
+
+    // Watch my "following" subcollection and load each user's live profile
+    useEffect(() => {
+    if (!me) return;
+
+    const followRef = collection(db, "user", me, "following");
+    setFollowingLoading(true);
+
+    const unsub = onSnapshot(
+        followRef,
+        async (snap) => {
+        try {
+            const uids = snap.docs.map((d) => {
+            // you might store targetUid field or use doc ID
+            const data = d.data() || {};
+            return data.targetUid || d.id;
+            });
+
+            const profiles = [];
+            for (const uid of uids) {
+            if (!uid) continue;
+            try {
+                const uref = doc(db, "user", uid);
+                const usnap = await getDoc(uref);
+                if (usnap.exists()) {
+                profiles.push({
+                    id: uid,
+                    ...usnap.data(), // should include user_name, user_pfp
+                });
+                }
+            } catch (e) {
+                console.error("Failed to load followed user", uid, e);
+            }
+            }
+
+            setFollowingProfiles(profiles);
+        } finally {
+            setFollowingLoading(false);
+        }
+        },
+        (err) => {
+        console.error("following onSnapshot error", err);
+        setFollowingLoading(false);
+        setFollowingProfiles([]);
+        }
+    );
+
+    return () => unsub();
+    }, [me]);
 
     // Load your own profile once
     useEffect(() => {
@@ -298,7 +360,6 @@ export default function Messagepage() {
             )}
         </main>
 
-        {/* FOLLOWING LIST MODAL (uses your shared Modal component) */}
         <Modal open={showFollowModal} onClose={() => setShowFollowModal(false)}>
             <div className="modal-follow-header">
                 <h3>Start new chat</h3>
@@ -312,34 +373,39 @@ export default function Messagepage() {
             />
 
             <div className="modal-follow-list">
-                {following.map((f) => {
-                    const uid = f.targetUid || f.id;
+                {followingLoading && (
+                <div className="msg-empty-small">Loading following…</div>
+                )}
+
+                {!followingLoading && filteredFollowing.length === 0 && (
+                <div className="msg-empty-small">
+                    You’re not following anyone yet.
+                </div>
+                )}
+
+                {!followingLoading &&
+                filteredFollowing.map((f) => {
+                    const uid = f.id;
                     return (
-                        <button
-                            key={uid}
-                            className="modal-follow-row"
-                            onClick={() => {
-                            startDM(uid);
-                            setShowFollowModal(false);
-                            }}
-                        >
-                            <img
-                                src={f.user_pfp || "https://ui-avatars.com/api/?name=U"}
-                                alt=""
-                                className="modal-follow-avatar"
-                            />
-                            <span className="modal-follow-name">
-                                {f.user_name || uid.slice(0, 6)}
-                            </span>
-                        </button>
+                    <button
+                        key={uid}
+                        className="modal-follow-row"
+                        onClick={() => {
+                        startDM(uid);
+                        setShowFollowModal(false);
+                        }}
+                    >
+                        <img
+                        src={f.user_pfp || "https://ui-avatars.com/api/?name=U"}
+                        alt=""
+                        className="modal-follow-avatar"
+                        />
+                        <span className="modal-follow-name">
+                        {f.user_name || uid.slice(0, 6)}
+                        </span>
+                    </button>
                     );
                 })}
-
-                {following.length === 0 && (
-                    <div className="msg-empty-small">
-                        You’re not following anyone yet.
-                    </div>
-                )}
             </div>
         </Modal>
       </div>
