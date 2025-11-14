@@ -7,11 +7,12 @@ import userIcon from "../../assets/defaultIcon.png";
 import "./sidebarStyle.css";
 
 function Sidebar() {
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const uid = currentUser?.uid;
-  const [username, setUsername] = useState("Guest");
+  const [username, setUsername] = useState("");
+  const [userpfp, setPfp] = useState(userIcon);
 
   useEffect(() => {
     if (currentUser?.userData?.user_name) {
@@ -20,6 +21,14 @@ function Sidebar() {
       setUsername("Guest");
     }
   }, [currentUser?.userData?.user_name]);
+
+  useEffect(() => {
+    if (currentUser?.userData?.user_pfp) {
+      setPfp(currentUser.userData.user_pfp);
+    } else {
+      setPfp(userIcon);
+    }
+  }, [currentUser?.userData?.user_pfp]);
 
   return (
     <div className={`sidebar ${isActive ? "active" : ""}`}>
@@ -32,7 +41,7 @@ function Sidebar() {
       </div>
 
       <div className="user">
-        <img src={userIcon} alt="me" className="user-img" />
+        <img className="user-img" src={userpfp} alt=""/>
         <div>
           <p className="bold">{username}</p>
           <p></p>
@@ -67,7 +76,7 @@ function Sidebar() {
 
         <li onClick={() => navigate("/messagepage")}>
           <a href="#" onClick={(e) => e.preventDefault()}>
-            <i className="bx bxs-message-dots"></i>  
+            <i className='bx bx-message-detail'></i>  
             <span className="nav-item">Messages</span>
           </a>
           <span className="tooltip">Messages</span>

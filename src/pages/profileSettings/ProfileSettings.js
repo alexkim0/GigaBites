@@ -162,6 +162,7 @@ export const ProfileSettings = () => {
       }
 
       navigate(`/profilepage/${targetUid}`);
+      window.location.reload();
     } catch (err) {
       console.error(err);
       setErrorMessage("Failed to save changes. Please try again.");

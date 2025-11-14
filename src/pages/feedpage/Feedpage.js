@@ -291,7 +291,9 @@ export const Feed = () => {
                         }}
                         title={soundOnPostId === p.id ? "Mute" : "Unmute"}
                       >
-                        {soundOnPostId === p.id ? "🔊" : "🔇"}
+                        <i
+                          className={soundOnPostId === p.id ? "bx bx-volume-full" : "bx bx-volume-mute"}
+                        ></i>
                       </button>
                     )}
                   </div>
@@ -305,14 +307,18 @@ export const Feed = () => {
                   onClick={() => toggleComments(p.id)}
                   title="Comments"
                 >
-                  💬 {String(p.commentCount ?? 0)}
+                  <i
+                    className={openCommentsPostId ? "bx bxs-message-detail" : "bx bx-message-detail"}
+                    style={{ color: openCommentsPostId ? "#000" : "#000" }}
+                  ></i>
+                  {String(p.commentCount ?? 0)}
                 </button>
-                <button
+               <button
                   className="share-btn"
                   onClick={() => console.log("share", p.id)}
                   title="Share"
                 >
-                  ↗️
+                  <i class='bx bxs-send'></i> 
                 </button>
               </div>
 

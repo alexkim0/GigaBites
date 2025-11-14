@@ -51,7 +51,11 @@ export default function LikeButton({ postId, initialCount }) {
       disabled={busy}
       title={liked ? "Unlike" : "Like"}
     >
-      ❤ {count}
+      <i
+        className={liked ? "bx bxs-heart" : "bx bx-heart"}
+        style={{ color: liked ? "#ee6b6c" : "#000" }}
+      ></i>
+      {count}
     </button>
   );
 }

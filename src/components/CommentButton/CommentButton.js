@@ -5,10 +5,12 @@ import { addComment, watchComments } from "../../lib/Comments";
 import "./CommentButton.css";
 
 export default function CommentButton({ count = 0, onToggle }) {
+  const [iconOpen, setIconOpen] = useState(false);
+
   return (
     <button
       className="comment-btn"
-      onClick={onToggle}
+      onClick={() => { onToggle(); setIconOpen(!iconOpen); }}
       title="Comments"
       type="button"
     >
