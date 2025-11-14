@@ -1,7 +1,7 @@
 // src/pages/Messagepage/Messagepage.js
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { auth } from "../../config/firebase-config";
-import { ensureConversation } from "../../lib/Chat";
+import { ensureConversation, markRead } from "../../lib/Chat";
 import { useConversations } from "../../hooks/UseConversations";
 import { useMessages } from "../../hooks/UseMessages";
 import { useFollowingList } from "../../hooks/UseFollowingList"
@@ -90,7 +90,14 @@ export default function Messagepage() {
                         <button
                             key={c.id}
                             className={`msg-convo ${activeCid === c.id ? "active" : ""}`}
-                            onClick={() => setActiveCid(c.id)}
+                            onClick={async () => {
+                                setActiveCid(c.id);
+                                try {
+                                    await markRead(c.id, me);
+                                } catch (e) {
+                                    console.error("markConversationRead failed", e);
+                                }
+                            }}
                         >
                             <div className="msg-line">
                                 <span className="msg-name">
