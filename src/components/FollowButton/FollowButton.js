@@ -1,4 +1,4 @@
-// src/components/FollowButton.jsx
+// src/components/FollowButton.js
 import React, { useEffect, useState } from "react";
 import { auth } from "../../config/firebase-config";
 import { toggleFollow, watchIsFollowing, watchFollowerCount } from "../../lib/Follows";

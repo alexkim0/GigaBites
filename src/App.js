@@ -1,3 +1,4 @@
+  // src/App.js
   // import { useEffect, useState } from "react";
   import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, useParams  } from "react-router-dom";
   import { Toaster } from "react-hot-toast";
@@ -18,6 +19,7 @@
   import { Profilepage } from "./pages/profilepage/Profilepage";
   import { Createpage } from "./pages/createpage/Createpage"
   import { Postpage } from "./pages/postpage/Postpage";
+  import Mapspage from "./pages/mappage/Mapspage";
   import Messagepage from "./pages/Messagepage/Messagepage";
   import MigrateFollowingUsernames from "./dev/MigrateFollowingUsernames";
   import { ProfileSettings } from "./pages/profileSettings/ProfileSettings";
@@ -128,6 +130,14 @@ function AppContent({ currentUser }) {
               element={
                 <ProtectedRoute>
                   <Createpage/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mapspage"
+              element={
+                <ProtectedRoute>
+                  <Mapspage />
                 </ProtectedRoute>
               }
             />

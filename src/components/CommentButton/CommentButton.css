@@ -1,3 +1,6 @@
+/* ===============================
+   CommentButton component styles
+   =============================== */
 .comment-popup {
   position: static; /* remove absolute */
   width: 300px;

@@ -1,3 +1,7 @@
+/* ===============================
+   Messagepage styles
+   =============================== */
+
 /* Root layout: shifted right so 80px sidebar doesn't overlap */
 .msg-root {
   display: flex;

@@ -1,3 +1,4 @@
+// src/pages/homepage/Homepage.js
 import React, { useState } from "react";
 import { auth } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";

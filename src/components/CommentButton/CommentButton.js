@@ -1,3 +1,4 @@
+// src/components/CommentButton/CommentButton.js
 import React, { useEffect, useState } from "react";
 import { auth } from "../../config/firebase-config";
 import { addComment, watchComments } from "../../lib/Comments";

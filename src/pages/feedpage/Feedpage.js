@@ -1,3 +1,4 @@
+// src/pages/feedpage/Feedpage.js
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { auth, db } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";

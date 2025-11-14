@@ -1,4 +1,4 @@
-// src/components/FollowListPanel.jsx
+// src/components/FollowListPanel.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { watchFollowers, watchFollowing } from "../../lib/Follows";

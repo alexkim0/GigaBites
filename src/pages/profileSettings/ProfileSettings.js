@@ -1,3 +1,4 @@
+// src/pages/profileSettings/ProfileSettings.js
 import React, { useEffect, useRef, useState } from "react";
 import { auth } from "../../config/firebase-config";
 import { useAuth } from "../../hooks/AuthProvider";

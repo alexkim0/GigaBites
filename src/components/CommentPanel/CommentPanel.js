@@ -1,4 +1,4 @@
-// src/components/CommentPanel.jsx
+// src/components/CommentPanel.js
 import React, { useEffect, useRef, useState } from "react";
 import { auth } from "../../config/firebase-config";
 import { addComment, watchComments } from "../../lib/Comments";

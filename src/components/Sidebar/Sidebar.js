@@ -1,3 +1,4 @@
+// src/components/Sidebar/Sidebar.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/AuthProvider";
@@ -72,6 +73,14 @@ function Sidebar() {
           <span className="tooltip">Messages</span>
         </li>
 
+        <li onClick={() => navigate("/mapspage")}>
+          <a href="#" onClick={(e) => e.preventDefault()}>
+            <i className="bx bx-map"></i>
+            <span className="nav-item">Maps</span>
+          </a>
+          <span className="tooltip">Maps</span>
+        </li>
+        
       </ul>
     </div>
   );
