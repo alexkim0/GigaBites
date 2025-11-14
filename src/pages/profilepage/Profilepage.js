@@ -94,13 +94,15 @@ export const Profilepage = () => {
 
     return (
         <div className="profile-page-wrap">
-            <header className="fy-header">
-                <div className="fy-actions">
-                    <DivButton className="ghost2" onClick={() => navigate(`/profileSettings/${uid}`)}>
-                        ⚙️
-                    </DivButton>
-                </div>
-            </header>
+            {isOwnProfile && (
+                <header className="fy-header">
+                    <div className="fy-actions">
+                        <DivButton className="ghost2" onClick={() => navigate(`/profileSettings/${uid}`)}>
+                            ⚙️
+                        </DivButton>
+                    </div>
+                </header>
+            )}
             <img className="pUserIcon" src={photoURL} alt=""/>
             <p className="pUsernameField">{username}</p>
             <div className="pInfoContainer">
