@@ -1,42 +1,225 @@
-/* ===============================
-   Maps page styles
-   =============================== */
-
-.maps-root {
-  min-height: 100vh;
+/* Wraps the entire map + sidebar */
+.map-wrapper {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ffffff;
-  color: #f5f5f5;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: #fafafa;
+  padding-left: 80px;
 }
 
-.maps-card {
-  padding: 2rem 2.5rem;
-  border-radius: 1.5rem;
-  background: rgba(0, 0, 0, 0.95);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
-  max-width: 480px;
-  text-align: center;
+/* ===========================
+   LEFT: MAP
+   =========================== */
+.map-container {
+  flex: 2;
+  height: 100%;
+  width: 100%;
 }
 
-.maps-card h1 {
-  margin-bottom: 0.75rem;
-  font-size: 1.8rem;
+/* ===========================
+   RIGHT: Restaurant List
+   =========================== */
+.list-container {
+  flex: 1;
+  border-left: 1px solid #ddd;
+  background: #fff;
+  padding: 16px;
+  overflow-y: auto;
 }
 
-.maps-card p {
-  margin: 0.25rem 0;
-  opacity: 0.8;
+.list-container h2 {
+  margin: 0 0 4px;
 }
 
-.maps-back-btn {
-  margin-top: 1.5rem;
-  padding: 0.6rem 1.4rem;
-  border-radius: 999px;
-  border: none;
+.list-status {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+/* List items */
+.restaurant-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.restaurant-item {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #cdcdcd;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 500;
+  background: white;
+  transition: all 0.15s ease;
+}
+
+.restaurant-item:hover {
+  border-color: #000;
+  transform: scale(1.02);
+}
+
+.restaurant-item.selected {
+  border: 2px solid black;
+}
+
+.restaurant-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.restaurant-rating {
+  font-size: 0.9rem;
+}
+
+.restaurant-address {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+/* Selected restaurant details */
+.selected-details {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.selected-details h3 {
+  margin: 0 0 6px;
+}
+
+/* ===========================
+   RESPONSIVE
+   Collapse sidebar on small screens
+   =========================== */
+@media (max-width: 800px) {
+  .map-wrapper {
+    flex-direction: column;
+  }
+
+  .map-container {
+    flex: none;
+    height: 60vh;
+  }
+
+  .list-container {
+    flex: none;
+    height: 40vh;
+    border-left: none;
+    border-top: 1px solid #ddd;
+  }
+}
+
+.map-search-bar {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.map-search-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-search-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.map-search-input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  outline: none;
+  background: #fafafa;
+}
+
+.map-search-input::placeholder {
+  color: #999;
+}
+
+.map-search-input:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 1px #000;
+  background: #fff;
+}
+
+.map-search-button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #000;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.map-search-button:hover {
+  background: #222;
+}
+
+/* 🔹 OVERLAY CARD */
+.detail-overlay {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  /* place it near the boundary between map and list */
+  right: 33.5%;             /* tweak this % to taste */
+  pointer-events: none;   /* let clicks pass through except on card */
+}
+
+.detail-card {
+  pointer-events: auto;   /* clickable */
+  width: 320px;
+  max-width: 90vw;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  padding: 14px 16px;
+  box-sizing: border-box;
+}
+
+.detail-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.detail-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.detail-rating,
+.detail-address {
+  font-size: 0.9rem;
+  color: #444;
+  margin: 2px 0;
+}
+
+/* Optional: on small screens, move card to bottom full-width */
+@media (max-width: 800px) {
+  .detail-overlay {
+    right: 50%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    bottom: 10px;
+    top: auto;
+  }
 }
