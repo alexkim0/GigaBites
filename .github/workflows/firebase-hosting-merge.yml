@@ -26,6 +26,8 @@ jobs:
       # 4) Build the React app → creates `build/` folder
       - name: Build app
         run: npm run build
+        env:
+          CI: false
 
       # 5) Deploy to Firebase Hosting (uses the built `build/` folder)
       - uses: FirebaseExtended/action-hosting-deploy@v0
