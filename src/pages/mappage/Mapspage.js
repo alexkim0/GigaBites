@@ -6,7 +6,9 @@ import {
   Marker,
   useJsApiLoader,
 } from "@react-google-maps/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useGoogleMapsLoader } from "../../hooks/UseGoogleMapsLoader";
+
 import "./Mapspage.css";
 
 const containerStyle = {
@@ -19,6 +21,7 @@ const fallbackCenter = { lat: 34.0522, lng: -118.2437 };
 
 export default function Mapspage() {
   const navigate = useNavigate();
+  const { search: queryString } = useLocation();
 
   const [center, setCenter] = useState(fallbackCenter);
   const [restaurants, setRestaurants] = useState([]);
@@ -31,6 +34,10 @@ export default function Mapspage() {
 
   // store map instance so we can use it in handlers
   const mapRef = useRef(null);
+
+  const [initializedFromQuery, setInitializedFromQuery] = useState(false);
+
+  const { isLoaded, loadError } = useGoogleMapsLoader();
 
   // Softer, Uber-Eats-ish map style
   const uberEatsMapStyle = [
@@ -62,13 +69,6 @@ export default function Mapspage() {
       stylers: [{ color: "#9e9e9e" }],
     },
   ];
-
-  // 1) Load Google Maps JS with Places library
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"], // IMPORTANT for PlacesService + Geocoder
-  });
 
   // Helper: run Places nearbySearch for restaurants near a point
   // The actual search function that searches nearby restaurant of the city(locationLatLng)
@@ -118,21 +118,68 @@ export default function Mapspage() {
         setStatus(`Found ${mapped.length} restaurants`);
       });
     },
-    [term, setStatus]
+    [term]
   );
+
+  // 🔹 Use URL query (from "View in map" button on a post)
+  useEffect(() => {
+    if (!isLoaded) return;              // wait until Maps JS is ready
+
+    const params = new URLSearchParams(queryString);
+    const lat = parseFloat(params.get("lat"));
+    const lng = parseFloat(params.get("lng"));
+    const nameParam = params.get("name");
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      const loc = { lat, lng };
+      const prettyName = nameParam ? decodeURIComponent(nameParam) : "Selected place";
+
+      const fromPost = {
+        id: "from-post",
+        name: prettyName,
+        rating: null,
+        address: "",
+        location: loc,
+      };
+
+      setCenter(loc);
+      setRestaurants([fromPost]);  // show at least this one
+      setSelected(fromPost);
+      setStatus("Place from post");
+      setInitializedFromQuery(true);
+
+      // If map already exists, pan and search around this location
+      if (mapRef.current && window.google?.maps) {
+        const gLoc = new window.google.maps.LatLng(lat, lng);
+        mapRef.current.panTo(gLoc);
+        runRestaurantSearch(mapRef.current, gLoc);
+      }
+    }
+  }, [queryString, isLoaded, runRestaurantSearch]);
 
   // 2) When map loads, just save it + maybe auto-search current center
   const onMapLoad = useCallback(
     (map) => {
       mapRef.current = map;
-      // initial search using fallback center or geolocation below
-      runRestaurantSearch(map, new window.google.maps.LatLng(center.lat, center.lng));
-    },
-    [center, runRestaurantSearch]
-  );
 
+      // If we already initialized from URL params,
+      // the effect above may have already run the search.
+      if (initializedFromQuery) {
+        // Just make sure map is centered correctly
+        map.panTo(new window.google.maps.LatLng(center.lat, center.lng));
+        return;
+      }
+
+      // Otherwise: initial search using current center (geolocation or fallback)
+      const loc = new window.google.maps.LatLng(center.lat, center.lng);
+      runRestaurantSearch(map, loc);
+    },
+    [center, runRestaurantSearch, initializedFromQuery]
+  );
   // 3) Optional: get user location on mount and recenter + search
   useEffect(() => {
+    if (initializedFromQuery) return;  // ⬅️ don't override
+
     if (!navigator.geolocation) {
       setStatus("Geolocation not available, using default location.");
       return;
@@ -145,18 +192,12 @@ export default function Mapspage() {
         };
         setCenter(c);
         setStatus("Showing restaurants near your location");
-
-        if (mapRef.current && window.google) {
-          const latLng = new window.google.maps.LatLng(c.lat, c.lng);
-          mapRef.current.panTo(latLng);
-          runRestaurantSearch(mapRef.current, latLng);
-        }
       },
       () => {
         setStatus("Location blocked, using default city.");
       }
     );
-  }, [runRestaurantSearch]);
+  }, [initializedFromQuery]);
 
   // Yelp-style search: "Find" (term) + "Near" (city)
   const handleSearch = async (e) => {

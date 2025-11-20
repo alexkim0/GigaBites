@@ -7,12 +7,24 @@ import DivButton from "../../components/DivButton";
 import toast from "react-hot-toast"
 
 import { CreatePostWithUpload } from "../../hooks/CreatePostWithUpload";
+import { useGoogleMapsLoader } from "../../hooks/UseGoogleMapsLoader";
+
+import {
+  GoogleMap,
+  Marker,
+  useJsApiLoader,          // ⬅️ NEW
+} from "@react-google-maps/api";
 
 import "./Createpage.css";
+
+
+// small default center (LA)
+const fallbackCenter = { lat: 34.0522, lng: -118.2437 };
 
 export const Createpage = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
+
     const [file, setFile] = useState(null);
     const [previewURL, setPreviewURL] = useState(null);
     const [error, setError] = useState("");
@@ -21,8 +33,24 @@ export const Createpage = () => {
     const [uploadedURL, setUploadedURL] = useState("");
     const [caption, setCaption] = useState("");
 
+    // restaurant + map state
+    const [restaurantQuery, setRestaurantQuery] = useState("");
+    const [restaurantResults, setRestaurantResults] = useState([]);
+    const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+    const [mapCenter, setMapCenter] = useState(fallbackCenter);
+    const autocompleteService = useRef(null);
+
     const isImage = (f) => f?.type?.startsWith("image/");
     const isVideo = (f) => f?.type?.startsWith("video/")
+
+    const { isLoaded, loadError } = useGoogleMapsLoader();
+
+    // set up AutocompleteService once Maps is ready
+    useEffect(() => {
+        if (!isLoaded || !window.google || !window.google.maps) return;
+        autocompleteService.current =
+        new window.google.maps.places.AutocompleteService();
+    }, [isLoaded]);
 
     // Create and clean up preview URL
     // function runs when videoFile gets rerendered
@@ -61,12 +89,63 @@ export const Createpage = () => {
         setFile(f);
     };
 
+    // search restaurants using Places Autocomplete
+    const searchRestaurants = (text) => {
+        setRestaurantQuery(text);
+
+        if (!text.trim()) {
+        setRestaurantResults([]);
+        return;
+        }
+        if (!autocompleteService.current) return;
+
+        autocompleteService.current.getPlacePredictions(
+        {
+            input: text,
+            types: ["establishment"],
+            keyword: "restaurant",
+        },
+        (preds) => {
+            setRestaurantResults(preds || []);
+        }
+        );
+    };
+
+    // when user picks a prediction, fetch full details + move map
+    const fetchRestaurantDetails = (placeId) => {
+        if (!window.google || !window.google.maps) return;
+
+        const service = new window.google.maps.places.PlacesService(
+        document.createElement("div")
+        );
+
+        service.getDetails({ placeId }, (place, status) => {
+        if (status !== "OK" || !place || !place.geometry) return;
+
+        const loc = place.geometry.location;
+        const locObj = { lat: loc.lat(), lng: loc.lng() };
+
+        const restaurant = {
+            placeId,
+            name: place.name,
+            address: place.formatted_address || "",
+            location: locObj,
+        };
+
+        setSelectedRestaurant(restaurant);
+        setRestaurantResults([]);
+        setRestaurantQuery(place.name);
+        setMapCenter(locObj); // center map on selection
+        });
+    };
+
     const uploadNow = async () => {
         if (!file) return;
         try {
             setUploading(true);
             const { downloadURL } = await CreatePostWithUpload(file, {
                 caption,
+                restaurant: selectedRestaurant,
                 onProgress: (pct) => setUploadPct(pct),
             });
             console.log(uploadPct);
@@ -109,6 +188,8 @@ export const Createpage = () => {
 
             {file && (
                 <div className="uploading-container">
+
+                    {/* EXISTING split: caption + media preview */}
                     <div className="split-container">
                         <textarea
                         value={caption}
@@ -143,6 +224,65 @@ export const Createpage = () => {
 
                     </div>
                     {/* Caption input */}
+                    
+                    {/* RESTAURANT + MAP SECTION */}
+                    <div className="restaurant-section">
+                        <label className="field-label">Restaurant</label>
+                        <input
+                            className="restaurant-input"
+                            placeholder="Search restaurant…"
+                            value={restaurantQuery}
+                            onChange={(e) => searchRestaurants(e.target.value)}
+                        />
+
+                        {restaurantResults.length > 0 && (
+                            <div className="restaurant-dropdown">
+                                {restaurantResults.map((r) => (
+                                    <div
+                                        key={r.place_id}
+                                        className="restaurant-option"
+                                        onClick={() => fetchRestaurantDetails(r.place_id)}
+                                    >
+                                        {r.description}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {isLoaded && (
+                        <div className="create-map-wrapper">
+                            {loadError && <div>Map failed to load.</div>}
+                            {!loadError && (
+                            <GoogleMap
+                                mapContainerStyle={{
+                                    width: "100%",
+                                    height: "220px",
+                                    borderRadius: "12px",
+                                }}
+                                center={mapCenter}
+                                zoom={selectedRestaurant ? 16 : 13}
+                                options={{
+                                    clickableIcons: false,
+                                    streetViewControl: false,
+                                    mapTypeControl: false,
+                                    fullscreenControl: false,
+                                }}
+                            >
+                                {selectedRestaurant && (
+                                <Marker position={selectedRestaurant.location} />
+                                )}
+                            </GoogleMap>
+                            )}
+                        </div>
+                        )}
+
+                        {selectedRestaurant && (
+                        <div className="restaurant-preview">
+                            <strong>{selectedRestaurant.name}</strong>
+                            <p>{selectedRestaurant.address}</p>
+                        </div>
+                        )}
+                    </div>
 
 
                     {/* Upload button + progress */}

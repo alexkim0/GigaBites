@@ -36,7 +36,7 @@ async function getClientMediaMeta(file) {
 }
 
 export async function CreatePostWithUpload(file, opts = {}) {
-    const { caption = "", onProgress } = opts;
+    const { caption = "", restaurant = null, onProgress } = opts;
 
     // checks if user is signed in or not
     const user = auth.currentUser;
@@ -45,6 +45,18 @@ export async function CreatePostWithUpload(file, opts = {}) {
     // checks if post is a video or photo
     const isVideo = file.type.startsWith("video/");
     const postId = crypto.randomUUID();
+
+    // prepare restaurant payload (or null)
+    let postRestaurant = null;
+    if (restaurant && restaurant.location) {
+      postRestaurant = {
+        placeId: restaurant.placeId || null,
+        name: restaurant.name || "",
+        address: restaurant.address || "",
+        lat: restaurant.location.lat,
+        lng: restaurant.location.lng,
+      };
+    }
 
     // Create Firestore doc
     const postRef = doc(db, "post", postId);
@@ -60,6 +72,7 @@ export async function CreatePostWithUpload(file, opts = {}) {
         post_visibility: "public",
         post_stars: 0,
         post_text: "",
+        post_restaurant: postRestaurant,
     });
 
     // upload file to cloud storage

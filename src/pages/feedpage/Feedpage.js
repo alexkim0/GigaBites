@@ -123,6 +123,11 @@ export const Feed = () => {
           authorCacheRef.current.set(p.post_authorId, author);
         }
 
+        const r = p.post_restaurant || null;
+        const restaurantName = r?.name || p.post_text || "";
+        const restaurantLat = r?.lat ?? null;
+        const restaurantLng = r?.lng ?? null;
+
         next.push({
           id: p.id,
           authorId: p.post_authorId,
@@ -134,7 +139,9 @@ export const Feed = () => {
           type: isVideo ? "video" : "image",
           mediaURL,
           author,
-          restaurant: p.post_text || "",
+          restaurant: restaurantName,
+          restaurantLat,
+          restaurantLng,
         });
       }
       if (!cancelled) setPosts(next);
@@ -212,6 +219,18 @@ export const Feed = () => {
     [soundOnPostId]
   );
 
+  const viewOnMap = (post) => {
+    if (!post.restaurantLat || !post.restaurantLng) return;
+
+    const params = new URLSearchParams({
+      lat: String(post.restaurantLat),
+      lng: String(post.restaurantLng),
+      name: post.restaurant || "",
+    });
+
+    navigate(`/mapspage?${params.toString()}`);   // adjust route if your map path is different
+  };
+
   return (
     <div className="fy-root">
       <main ref={containerRef} className="fy-feed">
@@ -280,6 +299,19 @@ export const Feed = () => {
                         @{p.author.displayName || "user"}
                       </span>
                     </div>
+
+                    <button
+                      type="button"
+                      className="fy-mapbtn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        viewOnMap(p);
+                      }}
+                      disabled={!p.restaurantLat || !p.restaurantLng}
+                      title={p.restaurantLat ? "View on map" : "No location set"}
+                    >
+                       "📍 View on map"
+                    </button>
 
                     {p.type === "video" && (
                       <button
