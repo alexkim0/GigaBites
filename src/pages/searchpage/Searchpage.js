@@ -1,5 +1,5 @@
 // src/pages/searchpage/Searchpage.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../config/firebase-config";
 import { collection, getDocs, limit, query } from "firebase/firestore";
@@ -13,7 +13,7 @@ function Searchpage() {
   const [error, setError] = useState("");
 
   const handleSearch = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const raw = term.trim();
 
     // allow "@name" or "name"
@@ -24,15 +24,12 @@ function Searchpage() {
       setError("");
 
       const usersRef = collection(db, "user");
-      // Just grab some users and filter client-side
+      // pull up to 100 users and filter client side
       const snap = await getDocs(query(usersRef, limit(100)));
       const allUsers = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-      // Debug: see how many we actually loaded
-      console.log("Loaded users for search:", allUsers.length, allUsers);
-
       if (!trimmed) {
-        // no term → show everyone to prove data exists
+        // empty search term: show everyone loaded
         setResults(allUsers);
       } else {
         const lower = trimmed.toLowerCase();
@@ -50,6 +47,17 @@ function Searchpage() {
       setSearching(false);
     }
   };
+
+  // live search while typing (debounced)
+  useEffect(() => {
+    const id = setTimeout(() => {
+      // run search even if term is empty, so you see "all users" initially
+      handleSearch();
+    }, 400); // 400 ms debounce
+
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term]);
 
   const goToProfile = (uid) => {
     navigate(`/profilepage/${uid}`);
@@ -82,7 +90,7 @@ function Searchpage() {
             <div className="search-empty">
               {term.trim()
                 ? "No users found."
-                : "Type a username and press Search."}
+                : "Type a username to search users."}
             </div>
           )}
 
