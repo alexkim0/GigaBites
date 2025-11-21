@@ -70,6 +70,14 @@ function Sidebar() {
           <span className="tooltip">Feed</span>
         </li>
 
+        <li onClick={() => navigate("/search")}>
+          <a href="" onClick={(e) => e.preventDefault()}>
+            <i className="bx bx-search"></i>
+            <span className="nav-item">Search</span>
+          </a>
+          <span className="tooltip">Search</span>
+        </li>
+
         <li onClick={() => navigate("/createpage")}>
           <a href="">
             <i className="bx bx-plus-circle"></i>
@@ -109,6 +117,7 @@ function Sidebar() {
           </a>
           <span className="tooltip">Logout</span>
         </li>
+        
         
       </ul>
     </div>

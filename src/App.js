@@ -22,6 +22,7 @@
   import Mapspage from "./pages/mappage/Mapspage";
   import Messagepage from "./pages/Messagepage/Messagepage";
   import MigrateFollowingUsernames from "./dev/MigrateFollowingUsernames";
+  import Searchpage from "./pages/searchpage/Searchpage";
   import { ProfileSettings } from "./pages/profileSettings/ProfileSettings";
 
   function ProfilepageWithKey() {
@@ -171,6 +172,15 @@ function AppContent({ currentUser }) {
               element={
                 <ProtectedRoute>
                   <ProfileSettings/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/search"
+              element={
+                <ProtectedRoute>
+                  <Searchpage />
                 </ProtectedRoute>
               }
             />

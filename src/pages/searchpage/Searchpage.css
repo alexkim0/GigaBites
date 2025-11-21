@@ -1,0 +1,124 @@
+/* ===============================
+   Searchpage styles
+   =============================== */
+
+.search-root {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: #fafafa;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.search-panel {
+  width: 100%;
+  max-width: 640px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  padding: 20px 18px 16px;
+  box-sizing: border-box;
+}
+
+.search-header h2 {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+}
+
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.search-input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.search-button {
+  border-radius: 999px;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #111;
+  color: #fff;
+}
+
+.search-button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.search-error {
+  color: #d00;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.search-results {
+  margin-top: 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.search-empty {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* each user row */
+.search-result-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.search-result-row:hover {
+  background: #f3f3f3;
+}
+
+.search-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.search-texts {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-username {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.search-bio-preview {
+  font-size: 0.85rem;
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-bio-preview.muted {
+  color: #999;
+}
