@@ -24,6 +24,7 @@
   import MigrateFollowingUsernames from "./dev/MigrateFollowingUsernames";
   import Searchpage from "./pages/searchpage/Searchpage";
   import { ProfileSettings } from "./pages/profileSettings/ProfileSettings";
+  import RestaurantPage from "./pages/restaurantpage/RestaurantPage";
 
   function ProfilepageWithKey() {
       const { uid } = useParams();
@@ -172,6 +173,15 @@ function AppContent({ currentUser }) {
               element={
                 <ProtectedRoute>
                   <ProfileSettings/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/restaurantpage/:placeId"
+              element={
+                <ProtectedRoute>
+                  <RestaurantPage/>
                 </ProtectedRoute>
               }
             />

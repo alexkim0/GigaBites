@@ -644,6 +644,15 @@ export default function Mapspage() {
               ? "No posts yet"
               : "View posts for this place"}
             </button>
+            <button
+              className="detail-posts-button"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/restaurantpage/${selected.id}`);
+              }}
+              >
+              View details
+            </button>
           </div>
         </div>
       )}
