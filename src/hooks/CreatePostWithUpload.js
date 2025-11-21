@@ -36,7 +36,7 @@ async function getClientMediaMeta(file) {
 }
 
 export async function CreatePostWithUpload(file, opts = {}) {
-    const { caption = "", restaurant = null, onProgress } = opts;
+    const { caption = "", stars = 0, restaurant = null, onProgress } = opts;
 
     // checks if user is signed in or not
     const user = auth.currentUser;
@@ -58,6 +58,8 @@ export async function CreatePostWithUpload(file, opts = {}) {
       };
     }
 
+    const clampedStars = Math.max(0, Math.min(5, Number(stars) || 0));
+
     // Create Firestore doc
     const postRef = doc(db, "post", postId);
     await setDoc(postRef, {
@@ -70,7 +72,7 @@ export async function CreatePostWithUpload(file, opts = {}) {
         post_likeCount: 0,
         post_commentCount: 0,
         post_visibility: "public",
-        post_stars: 0,
+        post_stars: clampedStars,
         post_text: "",
         post_restaurant: postRestaurant,
     });

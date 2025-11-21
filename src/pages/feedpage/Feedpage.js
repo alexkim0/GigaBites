@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { auth, db } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import DivButton from "../../components/DivButton";
 import {collection,onSnapshot,orderBy,query,where,doc,getDoc,} from "firebase/firestore";
 import LikeButton from "../../components/LikeButton/LikeButton";
@@ -11,11 +11,27 @@ import "./Feedpage.css";
 
 export const Feed = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const uid = auth.currentUser?.uid || "";
+
+  // /feed?placeId=abc123&name=Whatever
+  const searchParams = new URLSearchParams(location.search);
+  const placeIdFilter = searchParams.get("placeId") || "";
+  const placeNameFilter = searchParams.get("name");
+  const placeFilterLabel = placeNameFilter
+    ? decodeURIComponent(placeNameFilter)
+    : null;
+
+  const clearFilter = useCallback(
+    () => navigate("/feed"),
+    [navigate]
+  );
 
   const [rawPosts, setRawPosts] = useState([]);
   const [posts, setPosts] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
   const toggleComments = useCallback(
@@ -44,6 +60,7 @@ export const Feed = () => {
 
   // Fetch public posts with real-time updates
   useEffect(() => {
+    setLoadingPosts(true);
     const base = collection(db, "post");
     const q1 = query(
       base,
@@ -73,6 +90,8 @@ export const Feed = () => {
             setRawPosts(list);
           });
           fallbackUnsubRef.current = fbUnsub;
+        } else {
+          setLoadingPosts(false);
         }
       }
     );
@@ -127,6 +146,7 @@ export const Feed = () => {
         const restaurantName = r?.name || p.post_text || "";
         const restaurantLat = r?.lat ?? null;
         const restaurantLng = r?.lng ?? null;
+        const restaurantPlaceId = r?.placeId || p.post_placeId || null; 
 
         next.push({
           id: p.id,
@@ -142,9 +162,14 @@ export const Feed = () => {
           restaurant: restaurantName,
           restaurantLat,
           restaurantLng,
+          restaurantPlaceId,
         });
       }
-      if (!cancelled) setPosts(next);
+      if (!cancelled) {
+        setPosts(next);
+        setLoadingPosts(false);
+        setInitialized(true);     // ✅ we’ve completed at least one pass
+      }
     })();
 
     return () => {
@@ -192,7 +217,25 @@ export const Feed = () => {
     });
   }, [activeIndex, posts]);
 
-  const empty = useMemo(() => posts.length === 0, [posts.length]);
+  const filteredPosts = useMemo(() => {
+    if (!placeIdFilter) return posts;
+    return posts.filter(
+      (p) => p.restaurantPlaceId && p.restaurantPlaceId === placeIdFilter
+    );
+  }, [posts, placeIdFilter]);
+
+  // "no posts at all" (no filter) – use rawPosts
+  const emptyAll =
+    initialized &&               // only after first full load
+    !placeIdFilter &&
+    rawPosts.length === 0;
+
+  // "no posts for THIS place" – only once we know Firestore actually has some posts
+  const emptyForPlace =
+    initialized &&               // only after first full load
+    !!placeIdFilter &&
+    rawPosts.length > 0 &&
+    filteredPosts.length === 0;
 
   const handleClickAuthor = useCallback(
     (authorId) => navigate(`/profilepage/${authorId}`),
@@ -228,6 +271,11 @@ export const Feed = () => {
       name: post.restaurant || "",
     });
 
+    // IMPORTANT: include placeId if we know it
+    if (post.restaurantPlaceId) {
+      params.set("placeId", post.restaurantPlaceId);
+    }
+
     navigate(`/mapspage?${params.toString()}`);   // adjust route if your map path is different
   };
 
@@ -238,7 +286,27 @@ export const Feed = () => {
           Signed in as <strong>{auth?.currentUser?.email || "user"}</strong>
         </div>
 
-        {posts.map((p, i) => (
+
+        {/* Filtered banner */}
+        {placeIdFilter && (
+          <div className="feed-filter-banner">
+            <span className="feed-filter-label">
+              Showing posts for{" "}
+              <span className="feed-filter-place">
+                {placeFilterLabel || "this place"}
+              </span>
+            </span>
+            <button
+              type="button"
+              className="feed-filter-clear"
+              onClick={clearFilter}
+            >
+              Clear
+            </button>
+          </div>
+        )}
+
+        {filteredPosts.map((p, i) => (
           <section key={p.id} data-index={i} data-id={p.id} className="fy-card">
             <div className="fy-post-wrap">
               <div className="fy-frame">
@@ -364,9 +432,27 @@ export const Feed = () => {
           </section>
         ))}
 
-        {!empty ? null : (
-          <div className="fy-empty">No public posts yet — create one!</div>
+        {/* Loading indicator */}
+        {loadingPosts && !initialized && (
+          <div className="fy-loading">
+            <div className="fy-spinner" />
+            <span>Loading posts…</span>
+          </div>
         )}
+        
+        {/* Empty states
+        {!loadingPosts && (
+          <div className="fy-empty">
+            No posts for{" "}
+            <strong>{placeFilterLabel || "this place"}</strong> yet.
+          </div>
+        )}
+
+        {emptyAll && !loadingPosts &&(
+          <div className="fy-empty">
+            No public posts yet — create one!
+          </div>
+        )} */}
       </main>
     </div>
   );

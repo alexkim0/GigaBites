@@ -32,6 +32,7 @@ export const Createpage = () => {
     const [uploading, setUploading] = useState(false);
     const [uploadedURL, setUploadedURL] = useState("");
     const [caption, setCaption] = useState("");
+    const [rating, setRating] = useState(0);
 
     // restaurant + map state
     const [restaurantQuery, setRestaurantQuery] = useState("");
@@ -112,15 +113,33 @@ export const Createpage = () => {
     };
 
     // when user picks a prediction, fetch full details + move map
+    // Also checks if user's selection is a restaurant or not
     const fetchRestaurantDetails = (placeId) => {
-        if (!window.google || !window.google.maps) return;
+    if (!window.google || !window.google.maps) return;
 
-        const service = new window.google.maps.places.PlacesService(
+    const service = new window.google.maps.places.PlacesService(
         document.createElement("div")
-        );
+    );
 
-        service.getDetails({ placeId }, (place, status) => {
-        if (status !== "OK" || !place || !place.geometry) return;
+    service.getDetails(
+        {
+        placeId,
+        fields: ["name", "formatted_address", "geometry", "types"],
+        },
+        (place, status) => {
+        if (status !== window.google.maps.places.PlacesServiceStatus.OK || !place) {
+            return;
+        }
+
+        // 🚫 Hard rule: must be a restaurant
+        if (!Array.isArray(place.types) || !place.types.includes("restaurant")) {
+            // You can use toast here if you want:
+            // toast.error("Please select a restaurant, not another type of place.");
+            setError("Please select a restaurant, not another type of place.");
+            return;
+        }
+
+        if (!place.geometry || !place.geometry.location) return;
 
         const loc = place.geometry.location;
         const locObj = { lat: loc.lat(), lng: loc.lng() };
@@ -136,7 +155,9 @@ export const Createpage = () => {
         setRestaurantResults([]);
         setRestaurantQuery(place.name);
         setMapCenter(locObj); // center map on selection
-        });
+        setError(""); // clear any previous error
+        }
+    );
     };
 
     const uploadNow = async () => {
@@ -145,6 +166,7 @@ export const Createpage = () => {
             setUploading(true);
             const { downloadURL } = await CreatePostWithUpload(file, {
                 caption,
+                stars: rating, 
                 restaurant: selectedRestaurant,
                 onProgress: (pct) => setUploadPct(pct),
             });
@@ -282,6 +304,21 @@ export const Createpage = () => {
                             <p>{selectedRestaurant.address}</p>
                         </div>
                         )}
+                        <div className="rating-container">
+                            <label className="rating-label">Rating</label>
+                            <select
+                                className="rating-select"
+                                value={rating}
+                                onChange={(e) => setRating(Number(e.target.value))}
+                            >
+                                <option value={0}>No rating</option>
+                                <option value={1}>★☆☆☆☆</option>
+                                <option value={2}>★★☆☆☆</option>
+                                <option value={3}>★★★☆☆</option>
+                                <option value={4}>★★★★☆</option>
+                                <option value={5}>★★★★★</option>
+                            </select>
+                        </div>
                     </div>
 
 

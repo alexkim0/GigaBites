@@ -169,21 +169,12 @@
 .fy-meta { display: flex; align-items: center; gap: 8px; opacity: 0.9; font-size: 14px; pointer-events: auto; }
 .fy-avatar { width: 24px; height: 24px; border-radius: 999px; }
 
+/* You probably already have .fy-empty, but in case you want it: */
 .fy-empty {
-  display: grid;
-  place-items: center;
-  height: 60vh;
-  color: rgba(255,255,255,0.85);
-}
-.fy-loading {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255,255,255,0.1);
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
+  margin: 32px auto;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #666;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -293,4 +284,85 @@
 .fy-mapbtn:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+/* Filter banner at top of feed when a place is active */
+.feed-filter-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin: 8px auto 12px;
+  padding: 8px 12px;
+
+  max-width: 420px;
+
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.feed-filter-label {
+  color: #555;
+}
+
+.feed-filter-place {
+  font-weight: 600;
+  color: #111;
+}
+
+.feed-filter-clear {
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  background: #111;
+  color: #fff;
+
+  transition: background 0.15s ease, transform 0.08s ease;
+}
+
+.feed-filter-clear:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.feed-filter-clear:active {
+  transform: translateY(0);
+}
+
+.fy-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  margin: 16px 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.fy-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #111;
+  animation: fy-spin 0.7s linear infinite;
+}
+
+@keyframes fy-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
