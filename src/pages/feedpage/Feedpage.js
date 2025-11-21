@@ -282,11 +282,6 @@ export const Feed = () => {
   return (
     <div className="fy-root">
       <main ref={containerRef} className="fy-feed">
-        <div className="fy-userbar">
-          Signed in as <strong>{auth?.currentUser?.email || "user"}</strong>
-        </div>
-
-
         {/* Filtered banner */}
         {placeIdFilter && (
           <div className="feed-filter-banner">
@@ -329,73 +324,86 @@ export const Feed = () => {
                   )}
 
                   <div className="fy-overlay">
-                    <div className="fy-chip">
-                      <span className="stars">
-                        {("★".repeat(Math.round(p.stars)) + "☆☆☆☆").slice(0, 5)}
-                      </span>
-                      {p.restaurant ? <span className="sep">·</span> : null}
-                      {p.restaurant ? (
-                        <span className="rest">{p.restaurant}</span>
-                      ) : null}
-                      <span className="sep">·</span>
-                      <span className="counts">
-                        ❤ {p.likeCount} · 💬 {p.commentCount}
-                      </span>
-                    </div>
+                    {openCommentsPostId !== p.id && (
+                      <>
+                        <div className="fy-chip">
+                          <span className="stars">
+                            {("★".repeat(Math.round(p.stars)) + "☆☆☆☆").slice(0, 5)}
+                          </span>
+                          {p.restaurant ? <span className="sep">·</span> : null}
+                          {p.restaurant ? (
+                            <span className="rest">{p.restaurant}</span>
+                          ) : null}
+                          <span className="sep">·</span>
+                          <span className="counts">
+                            ❤ {p.likeCount} · 💬 {p.commentCount}
+                          </span>
+                        </div>
 
-                    <p className="fy-caption">{p.caption}</p>
+                        <p className="fy-caption">{p.caption}</p>
 
-                    <div className="fy-meta">
-                      <img
-                        src={
-                          p.author.photoURL ||
-                          "https://ui-avatars.com/api/?name=U"
-                        }
-                        className="fy-avatar"
-                        alt=""
-                      />
-                      <span
-                        className="fy-handle"
-                        role="button"
-                        tabIndex={0}
-                        title="View Profile"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleClickAuthor(p.authorId);
-                        }}
-                      >
-                        @{p.author.displayName || "user"}
-                      </span>
-                    </div>
+                        <div className="fy-meta">
+                          <img
+                            src={
+                              p.author.photoURL ||
+                              "https://ui-avatars.com/api/?name=U"
+                            }
+                            className="fy-avatar"
+                            alt=""
+                          />
+                          <span
+                            className="fy-handle"
+                            role="button"
+                            tabIndex={0}
+                            title="View Profile"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleClickAuthor(p.authorId);
+                            }}
+                          >
+                            @{p.author.displayName || "user"}
+                          </span>
+                        </div>
 
-                    <button
-                      type="button"
-                      className="fy-mapbtn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        viewOnMap(p);
-                      }}
-                      disabled={!p.restaurantLat || !p.restaurantLng}
-                      title={p.restaurantLat ? "View on map" : "No location set"}
-                    >
-                       "📍 View on map"
-                    </button>
+                        <button
+                          type="button"
+                          className="fy-mapbtn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            viewOnMap(p);
+                          }}
+                          disabled={!p.restaurantLat || !p.restaurantLng}
+                          title={p.restaurantLat ? "View on map" : "No location set"}
+                        >
+                          "📍 View on map"
+                        </button>
 
-                    {p.type === "video" && (
-                      <button
-                        type="button"
-                        className="fy-volbtn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleSound(p.id);
-                        }}
-                        title={soundOnPostId === p.id ? "Mute" : "Unmute"}
-                      >
-                        <i
-                          className={soundOnPostId === p.id ? "bx bx-volume-full" : "bx bx-volume-mute"}
-                        ></i>
-                      </button>
+                        {p.type === "video" && (
+                          <button
+                            type="button"
+                            className="fy-volbtn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSound(p.id);
+                            }}
+                            title={soundOnPostId === p.id ? "Mute" : "Unmute"}
+                          >
+                            <i
+                              className={soundOnPostId === p.id ? "bx bx-volume-full" : "bx bx-volume-mute"}
+                            ></i>
+                          </button>
+                        )}
+                      </>
                     )}
+                    
+                    {openCommentsPostId === p.id ? (
+                    <CommentPanel
+                      className="comment-panel"
+                      onClick={(e) => e.stopPropagation()} // stops clicks from reaching the feed
+                      postId={p.id}
+                      onClose={() => setOpenCommentsPostId(null)}
+                    />
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -413,7 +421,7 @@ export const Feed = () => {
                   ></i>
                   {String(p.commentCount ?? 0)}
                 </button>
-               <button
+                <button
                   className="share-btn"
                   onClick={() => console.log("share", p.id)}
                   title="Share"
@@ -421,13 +429,6 @@ export const Feed = () => {
                   <i class='bx bxs-send'></i> 
                 </button>
               </div>
-
-              {openCommentsPostId === p.id ? (
-                <CommentPanel
-                  postId={p.id}
-                  onClose={() => setOpenCommentsPostId(null)}
-                />
-              ) : null}
             </div>
           </section>
         ))}

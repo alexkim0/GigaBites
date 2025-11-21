@@ -2,7 +2,7 @@
    CommentPanel component styles
    =============================== */
 .fy-commentpanel {
-  width: 320px;
+  max-width: 720px;
   max-height: 70vh;
   overflow: auto;
   background: #fff;
@@ -32,7 +32,7 @@
   flex-direction: column;
   gap: 6px;
   margin-bottom: 10px;
-  max-height: 50vh;
+  max-height: 30vh;
   overflow-y: auto;
 }
 
