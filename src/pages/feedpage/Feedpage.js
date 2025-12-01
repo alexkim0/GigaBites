@@ -75,14 +75,15 @@ export const Feed = () => {
   const fallbackUnsubRef = useRef(null);
 
   const [soundOnPostId, setSoundOnPostId] = useState(null); // which post is unmuted
-  const [activeTag, setActiveTag] = useState(null); // null = "All"
+  const [activeTag, setActiveTag] = useState("ALL"); // "ALL" means no tag filter
+
   const [showTagFilter, setShowTagFilter] = useState(false);
 
   const toggleTagFilter = useCallback(() => {
     setShowTagFilter((prev) => {
       const next = !prev;
       // when closing the filter UI, reset tag to "All"
-      if (!next) setActiveTag(null);
+      if (!next) setActiveTag("ALL");
       return next;
     });
   }, []);
@@ -226,20 +227,26 @@ export const Feed = () => {
   const filteredPosts = useMemo(() => {
     let base = posts;
 
+    // 1) Place filter (from map click)
     if (placeIdFilter) {
       base = base.filter(
         (p) => p.restaurantPlaceId && p.restaurantPlaceId === placeIdFilter
       );
     }
 
-    if (activeTag) {
+    // 2) Category filter:
+    //    Only apply when the filter UI is actually open,
+    //    and the user picked a specific tag (not "ALL").
+    if (showTagFilter && activeTag && activeTag !== "ALL") {
       base = base.filter(
         (p) => Array.isArray(p.tags) && p.tags.includes(activeTag)
       );
     }
 
     return base;
-  }, [posts, placeIdFilter, activeTag]);
+  }, [posts, placeIdFilter, activeTag, showTagFilter]);
+
+
 
   // Determine which card is centered
   useEffect(() => {
@@ -363,12 +370,13 @@ export const Feed = () => {
               <button
                 type="button"
                 className={
-                  activeTag === null ? "tag-pill tag-pill-active" : "tag-pill"
+                  activeTag === "ALL" ? "tag-pill tag-pill-active" : "tag-pill"
                 }
-                onClick={() => setActiveTag(null)}
+                onClick={() => setActiveTag("ALL")}
               >
                 All
               </button>
+
 
               {TAG_OPTIONS.map((label) => (
                 <button
@@ -520,7 +528,11 @@ export const Feed = () => {
                 </button>
                 <button
                   className="share-btn"
-                  onClick={() => console.log("share", p.id)}
+                  onClick={() =>
+                    navigator
+                      .share?.({ url: window.location.href })
+                      .catch(() => {})
+                  }
                   title="Share"
                 >
                   <i className="bx bxs-send"></i>

@@ -136,3 +136,146 @@
 .fy-actions {
   margin-left: auto; /* pushes actions all the way to the right */
 }
+
+/*  Delete button */
+
+.fy-buttonbar .delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 10px 16px;
+  border-radius: 999px;
+
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  box-shadow: 0 2px 6px rgba(248, 113, 113, 0.25);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.08s ease;
+}
+
+.fy-buttonbar .delete-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(248, 113, 113, 0.35);
+}
+
+.fy-buttonbar .delete-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(248, 113, 113, 0.2);
+}
+
+/* ===============================
+   Unified Button Bar Style
+   =============================== */
+
+.fy-buttonbar {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+/* Base pill button */
+.fy-buttonbar button,
+.fy-buttonbar .like-button,
+.fy-buttonbar .comment-btn,
+.fy-buttonbar .share-btn,
+.fy-buttonbar .delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 10px 16px;
+  border-radius: 999px;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  border: 1px solid #e5e5e5;
+  background: #fafafa;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.08s ease;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+
+/* Hover */
+.fy-buttonbar button:hover {
+  background: #f3f3f3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,.12);
+}
+
+/* Active */
+.fy-buttonbar button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+/* ===============================
+   Individual Color Styles
+*/
+
+/* ❤️ Like button */
+.fy-buttonbar .like-button {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+.fy-buttonbar .like-button:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+/* 💬 Comment button */
+.fy-buttonbar .comment-btn {
+  border-color: #dbeafe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.fy-buttonbar .comment-btn:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+/* ↗️ Share button */
+.fy-buttonbar .share-btn {
+  border-color: #fde68a;
+  background: #fef9c3;
+  color: #b45309;
+}
+.fy-buttonbar .share-btn:hover {
+  background: #fde68a;
+  border-color: #fcd34d;
+}
+
+/* 🗑 Delete button (owner only) */
+.fy-buttonbar .delete-btn {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  box-shadow: 0 2px 6px rgba(248, 113, 113, 0.25);
+}
+.fy-buttonbar .delete-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(248, 113, 113, 0.35);
+}
