@@ -528,15 +528,27 @@ export const Feed = () => {
                 </button>
                 <button
                   className="share-btn"
-                  onClick={() =>
-                    navigator
-                      .share?.({ url: window.location.href })
-                      .catch(() => {})
-                  }
+                  onClick={() => {
+                    const shareUrl = `${window.location.origin}/postpage/${p.id}`;
+                    const shareData = {
+                      title: p.restaurant || "Gigabites post",
+                      text: p.caption || "",
+                      url: shareUrl,
+                    };
+
+                    if (navigator.share) {
+                      navigator.share(shareData).catch(() => {});
+                    } else {
+                      // Fallback: copy link
+                      navigator.clipboard?.writeText(shareUrl);
+                      alert("Post link copied to clipboard");
+                    }
+                  }}
                   title="Share"
                 >
                   <i className="bx bxs-send"></i>
                 </button>
+
               </div>
             </div>
           </section>
