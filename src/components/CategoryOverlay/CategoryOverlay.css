@@ -1,0 +1,98 @@
+/* src/components/CategoryOverlay.css */
+
+.cat-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55); /* dark glass */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.cat-overlay-panel {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 80vh;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.cat-overlay-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.cat-overlay-header p {
+  margin-top: 0.25rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.cat-overlay-grid {
+  margin-top: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* reuse your pill styles but you can keep them here too */
+.pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pill.selected {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.check {
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.check.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.cat-overlay-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.cat-btn {
+  border-radius: 999px;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.cat-btn.ghost {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.cat-btn.primary {
+  background: #111827;
+  color: #ffffff;
+}

@@ -1,13 +1,46 @@
 // src/pages/feedpage/Feedpage.js
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { auth, db } from "../../config/firebase-config";
 import { signOut } from "firebase/auth";
 import { useNavigate, useLocation } from "react-router-dom";
 import DivButton from "../../components/DivButton";
-import {collection,onSnapshot,orderBy,query,where,doc,getDoc,} from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import LikeButton from "../../components/LikeButton/LikeButton";
 import CommentPanel from "../../components/CommentPanel/CommentPanel";
 import "./Feedpage.css";
+
+const TAG_OPTIONS = [
+  "Japanese",
+  "Korean BBQ",
+  "Chinese",
+  "Thai",
+  "Italian",
+  "Mexican",
+  "Indian",
+  "Vietnamese",
+  "Dessert",
+  "Coffee",
+  "Street Food",
+  "Seafood",
+  "Vegan",
+  "BBQ",
+  "Hot Pot",
+  "Boba",
+];
 
 export const Feed = () => {
   const navigate = useNavigate();
@@ -22,10 +55,7 @@ export const Feed = () => {
     ? decodeURIComponent(placeNameFilter)
     : null;
 
-  const clearFilter = useCallback(
-    () => navigate("/feed"),
-    [navigate]
-  );
+  const clearFilter = useCallback(() => navigate("/feed"), [navigate]);
 
   const [rawPosts, setRawPosts] = useState([]);
   const [posts, setPosts] = useState([]);
@@ -45,6 +75,17 @@ export const Feed = () => {
   const fallbackUnsubRef = useRef(null);
 
   const [soundOnPostId, setSoundOnPostId] = useState(null); // which post is unmuted
+  const [activeTag, setActiveTag] = useState(null); // null = "All"
+  const [showTagFilter, setShowTagFilter] = useState(false);
+
+  const toggleTagFilter = useCallback(() => {
+    setShowTagFilter((prev) => {
+      const next = !prev;
+      // when closing the filter UI, reset tag to "All"
+      if (!next) setActiveTag(null);
+      return next;
+    });
+  }, []);
 
   const logout = useCallback(async () => {
     try {
@@ -55,7 +96,10 @@ export const Feed = () => {
     }
   }, [navigate]);
 
-  const profilePage = useCallback(() => navigate(`/profilepage/${uid}`), [navigate, uid]);
+  const profilePage = useCallback(
+    () => navigate(`/profilepage/${uid}`),
+    [navigate, uid]
+  );
   const createPage = useCallback(() => navigate("/createpage"), [navigate]);
 
   // Fetch public posts with real-time updates
@@ -146,7 +190,7 @@ export const Feed = () => {
         const restaurantName = r?.name || p.post_text || "";
         const restaurantLat = r?.lat ?? null;
         const restaurantLng = r?.lng ?? null;
-        const restaurantPlaceId = r?.placeId || p.post_placeId || null; 
+        const restaurantPlaceId = r?.placeId || p.post_placeId || null;
 
         next.push({
           id: p.id,
@@ -163,12 +207,13 @@ export const Feed = () => {
           restaurantLat,
           restaurantLng,
           restaurantPlaceId,
+          tags: Array.isArray(p.post_categories) ? p.post_categories : [],
         });
       }
       if (!cancelled) {
         setPosts(next);
         setLoadingPosts(false);
-        setInitialized(true);     // ✅ we’ve completed at least one pass
+        setInitialized(true); // we’ve completed at least one pass
       }
     })();
 
@@ -176,6 +221,25 @@ export const Feed = () => {
       cancelled = true;
     };
   }, [rawPosts]);
+
+  // Apply place filter + tag filter
+  const filteredPosts = useMemo(() => {
+    let base = posts;
+
+    if (placeIdFilter) {
+      base = base.filter(
+        (p) => p.restaurantPlaceId && p.restaurantPlaceId === placeIdFilter
+      );
+    }
+
+    if (activeTag) {
+      base = base.filter(
+        (p) => Array.isArray(p.tags) && p.tags.includes(activeTag)
+      );
+    }
+
+    return base;
+  }, [posts, placeIdFilter, activeTag]);
 
   // Determine which card is centered
   useEffect(() => {
@@ -196,13 +260,13 @@ export const Feed = () => {
     );
     cards.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [posts.length]);
+  }, [filteredPosts.length]);
 
   // Autoplay/pause videos based on activeIndex
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    posts.forEach((p, i) => {
+    filteredPosts.forEach((p, i) => {
       if (p.type !== "video") return;
       const video = container.querySelector(`section[data-index='${i}'] video`);
       if (!video) return;
@@ -215,27 +279,7 @@ export const Feed = () => {
         } catch {}
       }
     });
-  }, [activeIndex, posts]);
-
-  const filteredPosts = useMemo(() => {
-    if (!placeIdFilter) return posts;
-    return posts.filter(
-      (p) => p.restaurantPlaceId && p.restaurantPlaceId === placeIdFilter
-    );
-  }, [posts, placeIdFilter]);
-
-  // "no posts at all" (no filter) – use rawPosts
-  const emptyAll =
-    initialized &&               // only after first full load
-    !placeIdFilter &&
-    rawPosts.length === 0;
-
-  // "no posts for THIS place" – only once we know Firestore actually has some posts
-  const emptyForPlace =
-    initialized &&               // only after first full load
-    !!placeIdFilter &&
-    rawPosts.length > 0 &&
-    filteredPosts.length === 0;
+  }, [activeIndex, filteredPosts]);
 
   const handleClickAuthor = useCallback(
     (authorId) => navigate(`/profilepage/${authorId}`),
@@ -251,7 +295,6 @@ export const Feed = () => {
       if (!video) return;
       const willUnmute = soundOnPostId !== postId;
       try {
-        // iOS/Safari requires play() in the same user gesture that unmutes
         video.muted = !willUnmute;
         if (willUnmute) video.play().catch(() => {});
         setSoundOnPostId(willUnmute ? postId : null);
@@ -271,18 +314,17 @@ export const Feed = () => {
       name: post.restaurant || "",
     });
 
-    // IMPORTANT: include placeId if we know it
     if (post.restaurantPlaceId) {
       params.set("placeId", post.restaurantPlaceId);
     }
 
-    navigate(`/mapspage?${params.toString()}`);   // adjust route if your map path is different
+    navigate(`/mapspage?${params.toString()}`);
   };
 
   return (
     <div className="fy-root">
       <main ref={containerRef} className="fy-feed">
-        {/* Filtered banner */}
+        {/* Filtered banner for place */}
         {placeIdFilter && (
           <div className="feed-filter-banner">
             <span className="feed-filter-label">
@@ -301,6 +343,51 @@ export const Feed = () => {
           </div>
         )}
 
+        <div
+          className={
+            showTagFilter
+              ? "feed-filter-controls feed-filter-controls-open"
+              : "feed-filter-controls"
+          }
+        >
+          <button
+            type="button"
+            className="tag-filter-btn"
+            onClick={toggleTagFilter}
+          >
+            {showTagFilter ? "Hide category filter" : "Filter by category"}
+          </button>
+
+          {showTagFilter && (
+            <div className="feed-tagbar">
+              <button
+                type="button"
+                className={
+                  activeTag === null ? "tag-pill tag-pill-active" : "tag-pill"
+                }
+                onClick={() => setActiveTag(null)}
+              >
+                All
+              </button>
+
+              {TAG_OPTIONS.map((label) => (
+                <button
+                  key={label}
+                  type="button"
+                  className={
+                    activeTag === label ? "tag-pill tag-pill-active" : "tag-pill"
+                  }
+                  onClick={() => setActiveTag(label)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+
+
         {filteredPosts.map((p, i) => (
           <section key={p.id} data-index={i} data-id={p.id} className="fy-card">
             <div className="fy-post-wrap">
@@ -311,7 +398,7 @@ export const Feed = () => {
                       src={p.mediaURL}
                       className="fy-media"
                       loop
-                      muted={soundOnPostId !== p.id} // unmute only the active toggled post
+                      muted={soundOnPostId !== p.id}
                       playsInline
                       onClick={(e) => {
                         const v = e.currentTarget;
@@ -373,9 +460,11 @@ export const Feed = () => {
                             viewOnMap(p);
                           }}
                           disabled={!p.restaurantLat || !p.restaurantLng}
-                          title={p.restaurantLat ? "View on map" : "No location set"}
+                          title={
+                            p.restaurantLat ? "View on map" : "No location set"
+                          }
                         >
-                          "📍 View on map"
+                          📍 View on map
                         </button>
 
                         {p.type === "video" && (
@@ -389,20 +478,24 @@ export const Feed = () => {
                             title={soundOnPostId === p.id ? "Mute" : "Unmute"}
                           >
                             <i
-                              className={soundOnPostId === p.id ? "bx bx-volume-full" : "bx bx-volume-mute"}
+                              className={
+                                soundOnPostId === p.id
+                                  ? "bx bx-volume-full"
+                                  : "bx bx-volume-mute"
+                              }
                             ></i>
                           </button>
                         )}
                       </>
                     )}
-                    
+
                     {openCommentsPostId === p.id ? (
-                    <CommentPanel
-                      className="comment-panel"
-                      onClick={(e) => e.stopPropagation()} // stops clicks from reaching the feed
-                      postId={p.id}
-                      onClose={() => setOpenCommentsPostId(null)}
-                    />
+                      <CommentPanel
+                        className="comment-panel"
+                        onClick={(e) => e.stopPropagation()}
+                        postId={p.id}
+                        onClose={() => setOpenCommentsPostId(null)}
+                      />
                     ) : null}
                   </div>
                 </div>
@@ -416,8 +509,12 @@ export const Feed = () => {
                   title="Comments"
                 >
                   <i
-                    className={openCommentsPostId === p.id ? "bx bxs-message-circle-dots" : "bx bx-message-circle-dots"}
-                    style={{ color: openCommentsPostId ? "#000" : "#000" }}
+                    className={
+                      openCommentsPostId === p.id
+                        ? "bx bxs-message-circle-dots"
+                        : "bx bx-message-circle-dots"
+                    }
+                    style={{ color: "#000" }}
                   ></i>
                   {String(p.commentCount ?? 0)}
                 </button>
@@ -426,7 +523,7 @@ export const Feed = () => {
                   onClick={() => console.log("share", p.id)}
                   title="Share"
                 >
-                  <i class='bx bxs-send'></i> 
+                  <i className="bx bxs-send"></i>
                 </button>
               </div>
             </div>
@@ -440,22 +537,11 @@ export const Feed = () => {
             <span>Loading posts…</span>
           </div>
         )}
-        
-        {/* Empty states
-        {!loadingPosts && (
-          <div className="fy-empty">
-            No posts for{" "}
-            <strong>{placeFilterLabel || "this place"}</strong> yet.
-          </div>
-        )}
-
-        {emptyAll && !loadingPosts &&(
-          <div className="fy-empty">
-            No public posts yet — create one!
-          </div>
-        )} */}
       </main>
     </div>
+
+
+
   );
 };
 

@@ -8,6 +8,7 @@ import toast from "react-hot-toast"
 
 import { CreatePostWithUpload } from "../../hooks/CreatePostWithUpload";
 import { useGoogleMapsLoader } from "../../hooks/UseGoogleMapsLoader";
+import CategoryOverlay from "../../components/CategoryOverlay/CategoryOverlay";
 
 import {
   GoogleMap,
@@ -16,6 +17,25 @@ import {
 } from "@react-google-maps/api";
 
 import "./Createpage.css";
+
+export const FOOD_OPTIONS = [
+    { id: "japanese", label: "Japanese", emoji: "🍣" },
+    { id: "kbbq", label: "Korean BBQ", emoji: "🥩" },
+    { id: "chinese", label: "Chinese", emoji: "🥟" },
+    { id: "thai", label: "Thai", emoji: "🍜" },
+    { id: "italian", label: "Italian", emoji: "🍝" },
+    { id: "mexican", label: "Mexican", emoji: "🌮" },
+    { id: "indian", label: "Indian", emoji: "🍛" },
+    { id: "vietnamese", label: "Vietnamese", emoji: "🍲" },
+    { id: "dessert", label: "Dessert", emoji: "🧁" },
+    { id: "coffee", label: "Coffee", emoji: "☕" },
+    { id: "street", label: "Street Food", emoji: "🍢" },
+    { id: "seafood", label: "Seafood", emoji: "🦐" },
+    { id: "vegan", label: "Vegan", emoji: "🥗" },
+    { id: "bbq", label: "BBQ", emoji: "🍖" },
+    { id: "hotpot", label: "Hot Pot", emoji: "🍲" },
+    { id: "boba", label: "Boba", emoji: "🧋" },
+];
 
 
 // small default center (LA)
@@ -40,6 +60,19 @@ export const Createpage = () => {
     const [selectedRestaurant, setSelectedRestaurant] = useState(null);
     const [mapCenter, setMapCenter] = useState(fallbackCenter);
     const autocompleteService = useRef(null);
+
+    // near other useState hooks
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [showCategoryOverlay, setShowCategoryOverlay] = useState(false);
+
+    const toggleCategory = (label) => {
+    setSelectedCategories((prev) =>
+        prev.includes(label)
+        ? prev.filter((x) => x !== label)
+        : [...prev, label]
+    );
+    };
+
 
     const isImage = (f) => f?.type?.startsWith("image/");
     const isVideo = (f) => f?.type?.startsWith("video/")
@@ -131,7 +164,7 @@ export const Createpage = () => {
             return;
         }
 
-        // 🚫 Hard rule: must be a restaurant
+        //  Hard rule: must be a restaurant
         if (!Array.isArray(place.types) || !place.types.includes("restaurant")) {
             // You can use toast here if you want:
             // toast.error("Please select a restaurant, not another type of place.");
@@ -168,6 +201,7 @@ export const Createpage = () => {
                 caption,
                 stars: rating, 
                 restaurant: selectedRestaurant,
+                post_categories: selectedCategories, 
                 onProgress: (pct) => setUploadPct(pct),
             });
             console.log(uploadPct);
@@ -319,7 +353,41 @@ export const Createpage = () => {
                                 <option value={5}>★★★★★</option>
                             </select>
                         </div>
+                    <div className="category-section">
+                        <label className="field-label">Categories</label>
+                        <DivButton
+                            className="ghost"
+                            type="button"
+                            onClick={() => setShowCategoryOverlay(true)}
+                        >
+                            Choose categories
+                        </DivButton>
+
+                        {selectedCategories.length > 0 && (
+                            <div className="selected-preview">
+                            {selectedCategories.map((label) => (
+                                <span key={label} className="mini-chip">
+                                {label}
+                                </span>
+                            ))}
+                            </div>
+                        )}
                     </div>
+                        
+                        <CategoryOverlay
+                            open={showCategoryOverlay}
+                            title="Post categories"
+                            subtitle="Select one or more categories that match this place."
+                            options={FOOD_OPTIONS}
+                            selected={selectedCategories}
+                            onToggle={toggleCategory}
+                            onClose={() => setShowCategoryOverlay(false)}
+                            onConfirm={() => setShowCategoryOverlay(false)}
+                        />
+                    </div>
+
+
+                    
 
 
                     {/* Upload button + progress */}
@@ -336,7 +404,7 @@ export const Createpage = () => {
                             <div className="progress-track">
                                 <div 
                                 className="progress-fill"
-                                style={{ width: `${uploadPct}` }}
+                                style={{ width: `${uploadPct}%` }}
                                 ></div>
                             </div>
                         )}

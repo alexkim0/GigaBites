@@ -36,7 +36,18 @@ async function getClientMediaMeta(file) {
 }
 
 export async function CreatePostWithUpload(file, opts = {}) {
-    const { caption = "", stars = 0, restaurant = null, onProgress } = opts;
+    const {
+      caption = "",
+      stars = 0,
+      restaurant = null,
+      post_categories = [],   
+      onProgress
+    } = opts;
+
+    const safeCategories = Array.isArray(post_categories)
+      ? post_categories
+      : [];    
+
 
     // checks if user is signed in or not
     const user = auth.currentUser;
@@ -75,6 +86,7 @@ export async function CreatePostWithUpload(file, opts = {}) {
         post_stars: clampedStars,
         post_text: "",
         post_restaurant: postRestaurant,
+        post_categories: safeCategories,
     });
 
     // upload file to cloud storage

@@ -453,3 +453,72 @@
     font-size: 20px;
   }
 }
+
+.feed-tagbar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  overflow-x: auto;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tag-pill {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tag-pill-active {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.feed-filter-controls {
+  position: sticky;
+  top: 8px;                
+  z-index: 300;
+
+  padding: 4px 12px;
+  margin-bottom: 4px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: none;
+}
+
+.feed-filter-controls-open {
+  /* OPEN STATE = proper white banner so tags are readable */
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+
+
+
+
+.tag-filter-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid #222;
+  background: #111;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tag-filter-btn:hover {
+  opacity: 0.85;
+}
