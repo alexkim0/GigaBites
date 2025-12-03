@@ -6,10 +6,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 80vh;
   width: 60vw;
-  background-color: rgb(233, 233, 233);
-  margin-top: 15vh;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
   margin-left: 20vw;
   border-radius: 10px;
 }
@@ -24,20 +24,60 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 220px;
-  height: 59px;
+  width: 330px;
+  height: 100px;
   color: #fff;
   background: black;
-  border-radius: 12px;
-  font-size: 19px;
+  border-radius: 50px;
+  font-size: 60px;
   font-weight: 700;
   cursor: pointer;
 }
 
+.select-button i {
+  margin-right: 12px;
+}
+
 .split-container {
   display: flex;
-  justify-content: space-around;
   gap: 1rem;
+  height: 40vh;
+  width: 50vw;
+  align-items: stretch;
+}
+
+@media (max-width: 1000px) {
+  .split-container {
+    margin-top: 5vh;
+    flex-direction: column;
+    height: 50vh;
+  }
+
+  .create-map-wrapper {
+    height: 20vh;
+  }
+
+  .preview-img,
+  .preview-video {
+    max-height: 100%;
+  }
+}
+
+.preview-container {
+  flex: 0 0 auto;
+  max-width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.split-container1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin: auto;
+  height: 100%;
 }
 
 .split-container2 {
@@ -46,11 +86,11 @@
   justify-content: flex-end;
   gap: 1rem;
   margin: auto;
+  height: 100%;
 }
 
 .caption-input {
   width: 100%;
-  max-width: 36rem;          /* matches your preview width */
   padding: 0.75rem 1rem;     /* comfortable spacing */
   font-size: 1rem;
   font-family: inherit;
@@ -59,24 +99,25 @@
   outline: none;
   resize: none;              /* prevent ugly resize handle */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 2vh;
 }
 
 .preview-img {
-  width: 100%;                 /* w-full */
-  max-width: 36rem;            /* max-w-xl */
-  max-height: 18rem;
-  border-radius: 0.5rem;       /* rounded-lg */
-  object-fit: contain;         /* object-contain */
-  display: block;
+  width: auto;           /* natural width */
+  max-width: 100%;       /* don’t exceed container */
+  height: auto;          /* maintain aspect ratio */
+  max-height: 100%;      /* don’t exceed container height */
+  object-fit: contain;   /* maintain aspect ratio */
+  border-radius: 0.5rem;
 }
 
 .preview-video {
-  width: 100%;                 /* w-full */
-  max-width: 36rem;            /* max-w-xl */
-  max-height: 18rem;
-  border-radius: 0.5rem;       /* rounded-lg */
-  object-fit: contain;         /* object-contain */
-  display: block;
+  width: auto;           /* natural width */
+  max-width: 100%;       /* don’t exceed container */
+  height: auto;          /* maintain aspect ratio */
+  max-height: 100%;      /* don’t exceed container height */
+  object-fit: contain;   /* maintain aspect ratio */
+  border-radius: 0.5rem;
   background-color: #000;
 }
 
@@ -108,6 +149,10 @@
   gap: 0.75rem;
 }
 
+.upload-status {
+  margin-top: -2vh;
+}
+
 .restaurant-section {
   margin-bottom: 16px;
 }
@@ -121,6 +166,7 @@
 
 .restaurant-input {
   width: 100%;
+  max-width: 50vw;
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
@@ -132,6 +178,7 @@
   position: absolute;
   z-index: 20;
   max-height: 220px;
+  max-width: 50vw;
   overflow-y: auto;
   background: #fff;
   border-radius: 8px;
@@ -150,15 +197,20 @@
 }
 
 .create-map-wrapper {
-  margin-top: 8px;
+  flex: 1;
+  min-width: 0rem;      /* prevents overflow in flexbox */
+  width: 100%;     /* match the preview image/video height */
   border-radius: 12px;
   overflow: hidden;
 }
 
 .restaurant-preview {
   margin-top: 8px;
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #444;
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }
 
 /* Selected category chips under "Categories" */
@@ -178,4 +230,34 @@
   border: 1px solid #e5e7eb;
   font-size: 0.8rem;
   color: #111827;
+}
+
+.category-section{
+  max-width: 50vw;
+}
+
+.restaurant-preview i{
+  font-size: 25px;
+}
+
+.star-rating {
+  display: flex;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.star {
+  font-size: 28px;
+  color: #ccc;
+  outline: #000000;
+  outline-width: 1px;
+  transition: color 0.2s;
+}
+
+.star.filled {
+  color: gold;
+}
+
+.star:hover {
+  color: #444444;
 }

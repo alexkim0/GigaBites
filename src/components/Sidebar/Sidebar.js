@@ -10,7 +10,7 @@ import userIcon from "../../assets/defaultIcon.png";
 import "./sidebarStyle.css";
 
 function Sidebar() {
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const uid = currentUser?.uid;

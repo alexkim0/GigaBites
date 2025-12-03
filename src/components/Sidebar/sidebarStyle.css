@@ -173,3 +173,13 @@
     display: flex;
     justify-content: space-between;
 }
+
+/* =========================================
+   Hide sidebar tooltips on small screens
+   ========================================= */
+@media (max-width: 1050px) {
+    .sidebar ul li .tooltip {
+        display: none !important;
+        pointer-events: none;
+    }
+}

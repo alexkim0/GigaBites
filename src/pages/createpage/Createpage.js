@@ -73,6 +73,13 @@ export const Createpage = () => {
     );
     };
 
+    const handleClick = (value) => {
+        setRating(value);
+    };
+
+    const exitClick = () => {
+        setSelectedRestaurant(selectedRestaurant => !selectedRestaurant);
+    };
 
     const isImage = (f) => f?.type?.startsWith("image/");
     const isVideo = (f) => f?.type?.startsWith("video/")
@@ -222,11 +229,9 @@ export const Createpage = () => {
     return (
         <div className="createpage">
             {!file && (
-                
-
                 <div className="button-container">
                     <DivButton className="select-button" onClick={openPicker}>
-                        Select File
+                        <i class='bx  bx-plus-big'> </i> Create
                     </DivButton>
                 </div>
             )}
@@ -247,12 +252,7 @@ export const Createpage = () => {
 
                     {/* EXISTING split: caption + media preview */}
                     <div className="split-container">
-                        <textarea
-                        value={caption}
-                        onChange={(e) => setCaption(e.target.value)}
-                        placeholder="Write a caption..."
-                        className="caption-input"
-                        />
+                        
                         <div className="preview-container">
                             {/* Preview */}
                             {previewURL && isImage(file) &&  (
@@ -271,39 +271,12 @@ export const Createpage = () => {
                                     className="preview-video"
                                 />
                             )}
-                            <div className="video-info">
+                            {/*<div className="video-info">
                                 Selected: <strong>{file.name}</strong>{" "}
                                 ({(file.size / (1024 * 1024)).toFixed(2)} MB) —{" "}
                                 {isImage(file) ? "Image" : isVideo(file) ? "Video" : "Unknown"}
-                            </div>
+                            </div>*/}
                         </div>
-
-                    </div>
-                    {/* Caption input */}
-                    
-                    {/* RESTAURANT + MAP SECTION */}
-                    <div className="restaurant-section">
-                        <label className="field-label">Restaurant</label>
-                        <input
-                            className="restaurant-input"
-                            placeholder="Search restaurant…"
-                            value={restaurantQuery}
-                            onChange={(e) => searchRestaurants(e.target.value)}
-                        />
-
-                        {restaurantResults.length > 0 && (
-                            <div className="restaurant-dropdown">
-                                {restaurantResults.map((r) => (
-                                    <div
-                                        key={r.place_id}
-                                        className="restaurant-option"
-                                        onClick={() => fetchRestaurantDetails(r.place_id)}
-                                    >
-                                        {r.description}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
 
                         {isLoaded && (
                         <div className="create-map-wrapper">
@@ -312,7 +285,7 @@ export const Createpage = () => {
                             <GoogleMap
                                 mapContainerStyle={{
                                     width: "100%",
-                                    height: "220px",
+                                    height: "100%",
                                     borderRadius: "12px",
                                 }}
                                 center={mapCenter}
@@ -332,47 +305,86 @@ export const Createpage = () => {
                         </div>
                         )}
 
-                        {selectedRestaurant && (
-                        <div className="restaurant-preview">
-                            <strong>{selectedRestaurant.name}</strong>
-                            <p>{selectedRestaurant.address}</p>
-                        </div>
-                        )}
-                        <div className="rating-container">
-                            <label className="rating-label">Rating</label>
-                            <select
-                                className="rating-select"
-                                value={rating}
-                                onChange={(e) => setRating(Number(e.target.value))}
-                            >
-                                <option value={0}>No rating</option>
-                                <option value={1}>★☆☆☆☆</option>
-                                <option value={2}>★★☆☆☆</option>
-                                <option value={3}>★★★☆☆</option>
-                                <option value={4}>★★★★☆</option>
-                                <option value={5}>★★★★★</option>
-                            </select>
-                        </div>
-                    <div className="category-section">
-                        <label className="field-label">Categories</label>
-                        <DivButton
-                            className="ghost"
-                            type="button"
-                            onClick={() => setShowCategoryOverlay(true)}
-                        >
-                            Choose categories
-                        </DivButton>
+                    </div>
+                    
+                    {/* RESTAURANT + MAP SECTION */}
+                    <div className="restaurant-section">
+                        <label className="field-label">Restaurant</label>
+                        {!selectedRestaurant && (
+                            <div className = "restaurant-select">
+                                <input
+                                    className="restaurant-input"
+                                    placeholder="Search restaurant…"
+                                    value={restaurantQuery}
+                                    onChange={(e) => searchRestaurants(e.target.value)}
+                                />
 
-                        {selectedCategories.length > 0 && (
-                            <div className="selected-preview">
-                            {selectedCategories.map((label) => (
-                                <span key={label} className="mini-chip">
-                                {label}
-                                </span>
-                            ))}
+                                {restaurantResults.length > 0 && (
+                                    <div className="restaurant-dropdown">
+                                        {restaurantResults.map((r) => (
+                                            <div
+                                                key={r.place_id}
+                                                className="restaurant-option"
+                                                onClick={() => fetchRestaurantDetails(r.place_id)}
+                                            >
+                                                {r.description}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
-                    </div>
+
+                        {selectedRestaurant && (
+                        <div className="restaurant-preview">
+                            <div>
+                                <strong>{selectedRestaurant.name}</strong>
+                                <p>{selectedRestaurant.address}</p>
+                            </div>
+                            <i class='bx  bx-x' onClick={exitClick}></i>
+                        </div>
+                        )}
+
+                        {selectedRestaurant && (
+                            <div className="star-rating">
+                                {[1, 2, 3, 4, 5].map((value) => (
+                                    <i
+                                        key={value}
+                                        className={`bx bxs-star star ${value <= rating ? "filled" : ""}`}
+                                        onClick={() => handleClick(value)}
+                                    ></i>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Caption input */}
+                        <textarea
+                        value={caption}
+                        onChange={(e) => setCaption(e.target.value)}
+                        placeholder="Write a caption..."
+                        className="caption-input"
+                        />
+
+                        <div className="category-section">
+                            <label className="field-label">Categories</label>
+                            <DivButton
+                                className="ghost"
+                                type="button"
+                                onClick={() => setShowCategoryOverlay(true)}
+                            >
+                                Choose categories
+                            </DivButton>
+
+                            {selectedCategories.length > 0 && (
+                                <div className="selected-preview">
+                                {selectedCategories.map((label) => (
+                                    <span key={label} className="mini-chip">
+                                    {label}
+                                    </span>
+                                ))}
+                                </div>
+                            )}
+                        </div>
                         
                         <CategoryOverlay
                             open={showCategoryOverlay}
