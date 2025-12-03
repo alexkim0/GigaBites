@@ -394,8 +394,6 @@ export const Feed = () => {
           )}
         </div>
 
-
-
         {filteredPosts.map((p, i) => (
           <section key={p.id} data-index={i} data-id={p.id} className="fy-card">
             <div className="fy-post-wrap">

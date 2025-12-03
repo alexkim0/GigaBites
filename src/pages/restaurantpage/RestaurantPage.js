@@ -13,58 +13,58 @@ export default function RestaurantPage() {
   const [error, setError] = useState(null);
   
     useEffect(() => {
-    if (!placeId) {
+      if (!placeId) {
         setError("Missing placeId in route.");
         setStatus("Failed to load");
         return;
-    }
+      }
 
-    // 1) Ensure Google + Places is there
-    const g = window.google;
-    if (!g?.maps?.places) {
-        setError("Google Places library not available (did you include 'places' in loader?).");
+      if (loadError) {
+        setError("Failed to load Google Maps script.");
         setStatus("Failed to load");
         return;
-    }
+      }
 
-    // 2) Build service with a throwaway div (no ref / no Map required)
-    const tmpDiv = document.createElement("div");
-    const service = new g.maps.places.PlacesService(tmpDiv);
+      if (!isLoaded) {
+        setStatus("Loading…");
+        return;
+      }
 
-    const req = {
+      const g = window.google;
+      const tmpDiv = document.createElement("div");
+      const service = new g.maps.places.PlacesService(tmpDiv);
+
+      const req = {
         placeId,
         fields: [
-        "place_id",
-        "name",
-        "formatted_address",
-        "rating",
-        "user_ratings_total",
-        "opening_hours",
-        "url",
-        "website",
-        "geometry.location",
-        "photos"
+          "place_id",
+          "name",
+          "formatted_address",
+          "rating",
+          "user_ratings_total",
+          "opening_hours",
+          "url",
+          "website",
+          "geometry.location",
+          "photos",
         ],
-    };
+      };
 
-    setStatus("Fetching place details…");
-    setError(null);
-    setPlace(null);
+      setStatus("Fetching place details…");
+      setError(null);
+      setPlace(null);
 
-    console.log("[RestaurantPage] getDetails request:", req);
-
-    service.getDetails(req, (result, svcStatus) => {
-        console.log("[RestaurantPage] getDetails status:", svcStatus, result);
+      service.getDetails(req, (result, svcStatus) => {
         const OK = g.maps.places.PlacesServiceStatus.OK;
         if (svcStatus !== OK || !result) {
-        setError(`Could not load details for id: ${placeId} (status: ${svcStatus})`);
-        setStatus("Failed to load");
-        return;
+          setError(`Could not load details for id: ${placeId} (status: ${svcStatus})`);
+          setStatus("Failed to load");
+          return;
         }
         setPlace(result);
         setStatus("Loaded");
-    });
-    }, [placeId]);
+      });
+    }, [placeId, isLoaded, loadError]);
 
   return (
     <div className="rp-container">
