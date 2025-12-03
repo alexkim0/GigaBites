@@ -1,0 +1,10 @@
+:root {
+  --sidebar-width: 85px;
+}
+
+.rp-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-left: var(--sidebar-width);
+}

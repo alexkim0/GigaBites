@@ -190,7 +190,7 @@ export const ProfileSettings = () => {
             className="ghost2"
             onClick={() => navigate(`/profilepage/${targetUid || ""}`)}
           >
-            X
+            Back
           </DivButton>
         </div>
       </header>
@@ -250,15 +250,17 @@ export const ProfileSettings = () => {
         {/* Bio */}
         <div className="bio-field">
           <label className="ps-label">Biography</label>
-          <textarea
-            className="bio-input"
-            placeholder="Tell people a bit about yourself…"
-            value={biography}
-            maxLength={500}
-            onChange={(e) => setBiography(e.target.value)}
-            disabled={!isOwner}
-          />
-          <div className="ps-charcount">{biography.length}/500</div>
+          <div class="ps-inner">
+            <textarea
+              className="bio-input"
+              placeholder="Tell people a bit about yourself…"
+              value={biography}
+              maxLength={500}
+              onChange={(e) => setBiography(e.target.value)}
+              disabled={!isOwner}
+            />
+            <div className="ps-charcount">{biography.length}/500</div>
+          </div>
         </div>
 
         {/* Errors */}
