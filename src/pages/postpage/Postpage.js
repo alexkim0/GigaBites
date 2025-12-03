@@ -58,6 +58,12 @@ export function Postpage() {
         const mime = String(media0?.mimeType || "").toLowerCase();
         const isVideo = p.post_type === "video" || mime.startsWith("video/");
 
+        const r = p.post_restaurant || null;
+        const restaurantName = r?.name || p.post_text || "";
+        const restaurantLat = r?.lat ?? null;
+        const restaurantLng = r?.lng ?? null;
+        const restaurantPlaceId = r?.placeId || p.post_placeId || null;
+
         setPost({
           id: p.id,
           caption: p.post_caption || "",
@@ -67,7 +73,10 @@ export function Postpage() {
           date: p.post_date,
           type: isVideo ? "video" : "image",
           mediaURL,
-          restaurant: p.post_text || "",
+          restaurant: restaurantName,
+          restaurantLat,
+          restaurantLng,
+          restaurantPlaceId,
           authorId: p.post_authorId || "",
         });
 
@@ -144,6 +153,24 @@ export function Postpage() {
       console.error("Failed to delete post:", err);
       alert("Failed to delete post. Please try again.");
     }
+  };
+
+  // 🔹 View on map (same behavior as Feed)
+  const viewOnMap = (postWithLocation) => {
+    if (!postWithLocation.restaurantLat || !postWithLocation.restaurantLng)
+      return;
+
+    const params = new URLSearchParams({
+      lat: String(postWithLocation.restaurantLat),
+      lng: String(postWithLocation.restaurantLng),
+      name: postWithLocation.restaurant || "",
+    });
+
+    if (postWithLocation.restaurantPlaceId) {
+      params.set("placeId", postWithLocation.restaurantPlaceId);
+    }
+
+    navigate(`/mapspage?${params.toString()}`);
   };
 
   // Simple states
@@ -249,49 +276,65 @@ export function Postpage() {
                     className="fy-media"
                   />
                 )}
-              </div>
+                <div className="fy-overlay">
+                  <div className="fy-chip">
+                    <span className="stars">{chipStars}</span>
+                    {post.restaurant ? <span className="sep">·</span> : null}
+                    {post.restaurant ? (
+                      <span className="rest">{post.restaurant}</span>
+                    ) : null}
+                    <span className="sep">·</span>
+                    <span className="counts">
+                      ❤ {post.likeCount} · 💬 {post.commentCount}
+                    </span>
+                  </div>
 
-              <div className="fy-overlay">
-                <div className="fy-chip">
-                  <span className="stars">{chipStars}</span>
-                  {post.restaurant ? <span className="sep">·</span> : null}
-                  {post.restaurant ? (
-                    <span className="rest">{post.restaurant}</span>
-                  ) : null}
-                  <span className="sep">·</span>
-                  <span className="counts">
-                    ❤ {post.likeCount} · 💬 {post.commentCount}
-                  </span>
-                </div>
+                  <p className="fy-caption">{post.caption}</p>
 
-                <p className="fy-caption">{post.caption}</p>
+                  <div className="fy-meta">
+                    <img
+                      src={
+                        author.photoURL ||
+                        "https://ui-avatars.com/api/?name=U"
+                      }
+                      className="fy-avatar"
+                      alt=""
+                    />
+                    <span className="fy-handle">
+                      @{author.displayName || "user"}
+                    </span>
+                  </div>
 
-                <div className="fy-meta">
-                  <img
-                    src={
-                      author.photoURL || "https://ui-avatars.com/api/?name=U"
-                    }
-                    className="fy-avatar"
-                    alt=""
-                  />
-                  <span className="fy-handle">
-                    @{author.displayName || "user"}
-                  </span>
-                </div>
-
-                {post.type === "video" && (
+                  {/* Map button in overlay to match Feed feel */}
                   <button
                     type="button"
-                    className="fy-volbtn"
+                    className="fy-mapbtn"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleSound();
+                      viewOnMap(post);
                     }}
-                    title={soundOn ? "Mute" : "Unmute"}
+                    disabled={!post.restaurantLat || !post.restaurantLng}
+                    title={
+                      post.restaurantLat ? "View on map" : "No location set"
+                    }
                   >
-                    {soundOn ? "🔊" : "🔇"}
+                    📍 View on map
                   </button>
-                )}
+
+                  {post.type === "video" && (
+                    <button
+                      type="button"
+                      className="fy-volbtn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSound();
+                      }}
+                      title={soundOn ? "Mute" : "Unmute"}
+                    >
+                      {soundOn ? "🔊" : "🔇"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -304,6 +347,7 @@ export function Postpage() {
               >
                 💬 {String(post.commentCount ?? 0)}
               </button>
+
               <button
                 className="share-btn"
                 onClick={() =>
@@ -314,7 +358,7 @@ export function Postpage() {
                 title="Share"
               >
                 <i className="bx bxs-send"></i>
-              </button>       
+              </button>
 
               {isOwner && (
                 <button
@@ -339,3 +383,5 @@ export function Postpage() {
     </div>
   );
 }
+
+export default Postpage;
