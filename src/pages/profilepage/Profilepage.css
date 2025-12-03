@@ -10,6 +10,8 @@
     text-align: center;
     max-width: 850px;
     margin: auto;
+    padding-top: 3vh;
+    padding-bottom: 3vh;
     padding-left: var(--sidebar-width);
     padding-right: 5px;
 }
