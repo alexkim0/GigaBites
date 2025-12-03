@@ -475,12 +475,18 @@
   border-left: none;
   width: 200px; /* fixed sidebar width */
   height: 100%;
+  pointer-events: none;
+}
+
+.tag-filter-btn {
+  pointer-events: all;
 }
 
 .feed-filter-controls-open {
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(6px);
   border-left: 1px solid rgba(0, 0, 0, 0.05);
+  pointer-events: all;
 }
 
 .feed-tagbar {
