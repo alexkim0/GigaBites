@@ -32,34 +32,6 @@
   }
 
   function App() {
-    // const [testList, setTestList] = useState([]);
-
-    // // reference of the Business data collection in firestore
-    // const businessCollectionRef = collection(db, "Test");
-
-    // useEffect(() => {
-    //   const getTestList = async () => {
-    //     // READ THE DATA
-    //     // SET THE BUSINESS LIST
-    //     try {
-    //       const data = await getDocs(businessCollectionRef);
-    //       // filtering data
-    //       const filteredData = data.docs.map((doc) => ({
-    //         ...doc.data(), id: doc.id
-    //       }));
-          
-    //       setTestList(filteredData);
-    //       // print the data
-    //       console.log(filteredData)
-    //     } catch (err) {
-    //       console.error(err);
-    //     }
-    //   };
-
-    //   getTestList();
-    // }, [])
-
-    // const [showTests, setShowTests] = useState(false);
 
       const { currentUser, loading } = useAuth();
 
